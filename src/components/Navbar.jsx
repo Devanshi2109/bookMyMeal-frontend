@@ -8,12 +8,12 @@ const Navbar = () => {
   const userName = useUserStore((state) => state.userName);
 
   return (
-    <nav className="bg-blue-900 py-8">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
-          <div className="text-white text-xl font-bold">
+    <nav className="py-8 bg-navy">
+      <div className="container px-4 mx-auto">
+        <div className="flex items-center justify-between">
+          <div className="text-xl font-bold text-white">
             Hi, {userName}
-            <div className="text-gray-200 text-sm">Book your favorite meal</div>
+            <div className="text-sm text-gray-200">Book your favorite meal</div>
           </div>
 
           {/* Navigation Links */}
