@@ -1,16 +1,22 @@
 import React from "react";
 import HomePage from "./components/HomePage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Terms from "./components/Terms";
+import Privacy from "./components/Privacy";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
   },
-  // {
-  //   path: "/about",
-  //   element: <AboutPage />,
-  // },
+  {
+    path: "/terms",
+    element: <Terms />,
+  },
+  {
+    path: "/privacy",
+    element: <Privacy />,
+  },
 ]);
 
 const App = () => {
