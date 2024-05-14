@@ -10,8 +10,8 @@ const CalendarComponent = () => {
     };
 
     return (
-        <div className="app container mx-auto mt-5">
-            <div className="calendar-container mx-auto">
+        <div className="calendar-container mx-auto ml-4 mt-10">
+            <div className="calendar-container mx-auto transform scale-75">
                 <Calendar
                     onChange={handleDateChange}
                     value={selectedDate}

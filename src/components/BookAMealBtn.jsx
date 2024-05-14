@@ -39,7 +39,7 @@ const BookAMealBtn = () => {
   return (
     <div>
       <button
-        className="fixed px-5 py-3 m-2 text-white transform -translate-y-1/2 bg-blue-600 rounded-lg shadow-md hover:bg-navy top-1/4 right-14"
+        className="absolute px-5 py-3 m-2 text-white transform -translate-y-1/2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-900 top-1/4 right-14"
         onClick={handleBookMeal}
       >
         Book a Meal
