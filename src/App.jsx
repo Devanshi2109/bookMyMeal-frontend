@@ -1,4 +1,3 @@
-import React from "react";
 import HomePage from "./components/HomePage";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Terms from "./components/Terms";
@@ -7,6 +6,7 @@ import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import Register from "./components/Register";
 import Otp from "./components/Otp";
+import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
   {
@@ -22,21 +22,21 @@ const router = createBrowserRouter([
     element: <Privacy />,
   },
   {
-    path:"/login",
-    element:<Login/>
+    path: "/login",
+    element: <Login />,
   },
   {
-    path:"/register",
-    element:<Register/>
+    path: "/register",
+    element: <Register />,
   },
   {
-    path:"/forgot-password",
-    element:<ForgotPassword/>
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
-    path:"/otp",
-    element:<Otp/>
-  }
+    path: "/otp",
+    element: <Otp />,
+  },
 ]);
 
 const App = () => {
