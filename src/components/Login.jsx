@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import logo from "../assest/images/logo.svg";
 import loginImg from "../assest/images/signup-image.jpg";
 
@@ -138,6 +138,7 @@ const Login = () => {
           </form>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 };
