@@ -1,26 +1,106 @@
 import React, { useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const CalendarComponent = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+const localizer = momentLocalizer(moment);
 
-    const handleDateChange = date => {
-        setSelectedDate(date);
+const CalendarComponent = ({ viewMode }) => {
+  const [date, setDate] = useState(new Date());
+  const [events, setEvents] = useState([
+    
+    {
+      title: 'Booked Meal',
+      start: moment().subtract(1, 'days').toDate(),
+      end: moment().subtract(1, 'days').toDate(),
+      allDay: true,
+      isBooked: true,
+    },
+    
+    {
+      title: 'Booking',
+      start: moment().add(1, 'days').toDate(),
+      end: moment().add(1, 'days').toDate(),
+      allDay: true,
+      isBooked: false,
+    },
+    
+  ]);
+
+  const handleSelectSlot = ({ start }) => {
+    console.log("Selected Date: ", start);
+  };
+
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    let backgroundColor = '';
+    
+    if (moment(event.start).isBefore(moment(), 'day')) {
+      backgroundColor = 'bg-gray-500';
+    } else {
+      backgroundColor = 'bg-green-500';
+    }
+    
+    return {
+      className: backgroundColor + ' opacity-80 px-2 text-white',
+    };
+  };
+  
+  
+
+  const CustomToolbar = ({ onNavigate, label, date }) => {
+    const goToBack = () => {
+      if (moment(date).isAfter(moment(), 'month')) {
+        onNavigate(Navigate.PREVIOUS);
+      }
+    };
+
+    const goToNext = () => {
+      if (moment(date).isBefore(moment().add(2, 'months'), 'month')) {
+        onNavigate(Navigate.NEXT);
+      }
     };
 
     return (
-        <div className="app container mx-auto mt-5">
-            <div className="calendar-container mx-auto">
-                <Calendar
-                    onChange={handleDateChange}
-                    value={selectedDate}
-                    className="w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl bg-white bg-opacity-90 border border-gray-300 font-sans leading-normal shadow-md rounded-lg p-4 transition-colors duration-200 h-auto sm:h-auto md:h-auto lg:h-auto xl:h-auto 2xl:h-auto text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl"
-                    
-                />
-            </div>
-        </div>
+      <div className="rbc-toolbar">
+        <span className="rbc-btn-group">
+          <button type="button" onClick={goToBack} disabled={moment(date).isSameOrBefore(moment(), 'month')}>&lt;</button>
+          <span className="rbc-toolbar-label">{moment(date).format('MMMM YYYY')}</span>
+          <button type="button" onClick={goToNext} disabled={moment(date).isSameOrAfter(moment().add(3, 'months'), 'month')}>&gt;</button>
+        </span>
+      </div>
     );
+  };
+
+  return (
+    <div className={`relative ${viewMode === 'homepage' ? 'w-1/2' : 'w-full'} max-w-4xl mx-auto mt-12 right-64 m-8 `}>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        selectable
+        views={{ month: true }}
+        defaultView={Views.MONTH}
+        onSelectSlot={handleSelectSlot}
+        onNavigate={(newDate) => setDate(newDate)}
+        date={date}
+        components={{
+          toolbar: CustomToolbar,
+        }}
+        eventPropGetter={eventStyleGetter}
+        style={{ height: '500px' }}
+      />
+    </div>
+  );
 };
 
-export default CalendarComponent;
+const HomepageCalendar = () => {
+  return <CalendarComponent viewMode="homepage" />;
+};
+
+const ViewBookingCalendar = () => {
+  return <CalendarComponent viewMode="booking" />;
+};
+
+export default HomepageCalendar;
+export { ViewBookingCalendar };
