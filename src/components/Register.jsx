@@ -1,124 +1,174 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import signUpImg from "../assest/images/signup-image.jpg";
+import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    pass: '',
-    re_pass: ''
+    name: "",
+    email: "",
+    pass: "",
+    re_pass: "",
   });
-  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
-    });
-    // Clear the error message for the field being changed
-    setErrors({
-      ...errors,
-      [name]: ''
+      [name]: value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const errors = {};
     if (!formData.name.trim()) {
-      errors.name = 'Name is required';
+      toast.error("Name is required");
+      return;
     }
     if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
+      toast.error("Email is required");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast.error("Email is invalid");
+      return;
     }
     if (!formData.pass.trim()) {
-      errors.pass = 'Password is required';
+      toast.error("Password is required");
+      return;
     }
     if (!formData.re_pass.trim()) {
-      errors.re_pass = 'Repeat Password is required';
-    } else if (formData.pass.trim() !== formData.re_pass.trim()) {
-      errors.re_pass = 'Passwords do not match';
+      toast.error("Repeat Password is required");
+      return;
     }
-    setErrors(errors);
-
-    if (Object.keys(errors).length === 0) {
-      // Form submission logic here
-      console.log('Form submitted:', formData);
+    if (formData.pass.trim() !== formData.re_pass.trim()) {
+      toast.error("Passwords do not match");
+      return;
     }
+    console.log("Registering user:", formData);
   };
 
   return (
-    <section className="vh-100" >
-      <div className="container h-100">
-        <div className="row d-flex justify-content-center align-items-center h-100">
-          <div className="col-lg-12 col-xl-11">
-            <div className="card text-black" >
-              <div className="card-body p-md-5">
-                <div className="row justify-content-center">
-                <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-                    <img src="signup-image.jpg" className="img-fluid" alt="Sample image" />
-                  </div>
-                  <div className="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                    <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                    <form className="mx-1 mx-md-4" onSubmit={handleSubmit}>
-                      <div className="d-flex flex-row align-items-center mb-4">
-                        <i className="fas fa-user fa-lg me-3 fa-fw"></i>
-                        <div data-mdb-input-init className="form-outline flex-fill mb-0">
-                          <input type="text" id="form3Example1c" className="form-control"
-                            value={formData.name} onChange={handleChange} name="name" />
-                          <label className="form-label" htmlFor="form3Example1c">{formData.name ? '' : 'Your Name'}</label>
-                          {errors.name && <span className="text-danger">{errors.name}</span>}
-                        </div>
-                      </div>
-                      <div className="d-flex flex-row align-items-center mb-4">
-                        <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                        <div data-mdb-input-init className="form-outline flex-fill mb-0">
-                          <input type="email" id="form3Example3c" className="form-control" 
-                            value={formData.email} onChange={handleChange} name="email" />
-                          <label className="form-label" htmlFor="form3Example3c">{formData.email ? '' : 'Your Email'}</label>
-                          {errors.email && <span className="text-danger">{errors.email}</span>}
-                        </div>
-                      </div>
-                      <div className="d-flex flex-row align-items-center mb-4">
-                        <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
-                        <div data-mdb-input-init className="form-outline flex-fill mb-0">
-                          <input type="password" id="form3Example4c" className="form-control" 
-                            value={formData.pass} onChange={handleChange} name="pass" />
-                          <label className="form-label" htmlFor="form3Example4c">{formData.pass ? '' : 'Password'}</label>
-                          {errors.pass && <span className="text-danger">{errors.pass}</span>}
-                        </div>
-                      </div>
-                      <div className="d-flex flex-row align-items-center mb-4">
-                        <i className="fas fa-key fa-lg me-3 fa-fw"></i>
-                        <div data-mdb-input-init className="form-outline flex-fill mb-0">
-                          <input type="password" id="form3Example4cd" className="form-control" 
-                            value={formData.re_pass} onChange={handleChange} name="re_pass" />
-                          <label className="form-label" htmlFor="form3Example4cd">{formData.re_pass ? '' : 'Confirm Password'}</label>
-                          {errors.re_pass && <span className="text-danger">{errors.re_pass}</span>}
-                        </div>
-                      </div>
-                      <div className="form-check d-flex justify-content-center mb-5">
-                        <input className="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-                        <label className="form-check-label" htmlFor="form2Example3">
-                          I agree all statements in <a href="#!">Terms of service</a>
-                        </label>
-                      </div>
-                      <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button type="submit" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-lg">Register</button>
-                      </div>
-                    </form>
-                  </div>
-                 
-                </div>
+    <div className="flex h-screen">
+      <div className="hidden w-2/3 bg-center bg-cover md:block">
+        <img src={signUpImg} alt="" />
+      </div>
+      <div className="flex items-center justify-center w-full p-8 md:w-1/2">
+        <div className="w-full max-w-md">
+          <div className="mb-10 text-center">
+            <div className="flex items-start justify-start mx-auto text-left mb-14">
+              {/* Your logo and title */}
+            </div>
+            <p className="mb-4 text-3xl font-bold text-left">Sign up</p>
+            <p className="mb-4 text-left text-gray-500">
+              Create your account to get started.
+            </p>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input"
+                value={formData.name}
+                onChange={handleChange}
+                name="name"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input"
+                value={formData.email}
+                onChange={handleChange}
+                name="email"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="pass"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <input
+                id="pass"
+                type="password"
+                className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input"
+                value={formData.pass}
+                onChange={handleChange}
+                name="pass"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="re_pass"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="re_pass"
+                type="password"
+                className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input"
+                value={formData.re_pass}
+                onChange={handleChange}
+                name="re_pass"
+              />
+            </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  className="w-4 h-4 text-indigo-600 transition duration-150 ease-in-out form-checkbox"
+                />
+                <label
+                  htmlFor="terms"
+                  className="block ml-2 text-sm text-gray-900"
+                >
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-blue-600 hover:underline">
+                    Terms of Service
+                  </Link>
+                </label>
               </div>
             </div>
+
+            <div>
+              <button
+                type="submit"
+                className="w-full px-4 py-3 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700"
+              >
+                Sign Up
+              </button>
+            </div>
+          </form>
+          <div className="mt-4 text-center">
+            <p className="text-sm">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
-}
+};
 
 export default Register;
