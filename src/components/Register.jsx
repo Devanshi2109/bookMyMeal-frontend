@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import signUpImg from "../assest/images/signup-image.jpg";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -167,6 +167,7 @@ const Register = () => {
           </div>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 };

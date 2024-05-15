@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Calendar from "./Calendar";
@@ -6,7 +5,6 @@ import BookAMealBtn from "./BookAMealBtn";
 import CancelAMealBtn from "./CancelAMealBtn";
 import QuickBookBtn from "./QuickBookBtn";
 import ViewBookBtn from "./ViewBookBtn";
-import { Toaster } from "react-hot-toast";
 
 const HomePage = () => {
   return (
@@ -23,7 +21,6 @@ const HomePage = () => {
           <CancelAMealBtn />
         </div>
       </div>
-      <Toaster />
       <Footer />
     </div>
   );
