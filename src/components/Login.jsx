@@ -1,123 +1,145 @@
-import React, { useState } from 'react'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import logo from "../assest/images/logo.svg";
+import loginImg from "../assest/images/signup-image.jpg";
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        // Perform validation
-        if (!username || !password) {
-            toast.error('Please enter both username and password.');
-            return;
-        }
-        if (!username.trim()) {
-            toast.error('Please enter a username.');
-            return;
-        }
-    
-        if (!password.trim()) {
-            toast.error('Please enter a password.');
-            return;
-        }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!username || !password) {
+      toast.error("Please enter both username and password.");
+      return;
+    }
+    if (!username.trim()) {
+      toast.error("Please enter a username.");
+      return;
     }
 
-    const handleTogglePassword = () => {
-        const passwordField = document.getElementById('password-field');
-        passwordField.type === 'password' ? (passwordField.type = 'text') : (passwordField.type = 'password');
-      };
+    if (!password.trim()) {
+      toast.error("Please enter a password.");
+      return;
+    }
+    console.log("Username: ", username);
+    console.log("Password:", password);
+  };
+
+  const handleTogglePassword = () => {
+    const passwordField = document.getElementById("password-field");
+    passwordField.type === "password"
+      ? (passwordField.type = "text")
+      : (passwordField.type = "password");
+  };
 
   return (
-    <div>
-      <section className="login-content">
-      <div className="login-content-lt"></div>
-      <div className="login-content-rt">
-        <div className="login-box">
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="logo-wrapper">
-              <img src="..\src\Components\assests\images\logo.svg" alt="Rishabh Software" />
-              <span>Meal Facility</span>
+    <div className="flex h-screen">
+      <div
+        className="hidden w-2/3 bg-center bg-cover md:block"
+        style={{ backgroundImage: `url(${loginImg})` }}
+      ></div>
+      <div className="flex items-center justify-center w-full p-8 md:w-1/2">
+        <div className="w-full max-w-md">
+          <div className="mb-10 text-center">
+            <div className="flex items-start justify-start mx-auto text-left mb-14">
+              <img src={logo} alt="Rishabh Software" className="mr-4 h-14" />
+              <h2 className="text-4xl font-bold text-red-500">Meal Facility</h2>
             </div>
-            <h3 className="login-head">Sign in to your account</h3>
-            <p className="login-text">Enter your credentials to access your account.</p>
-            <div className="form-group">
-              <label className="control-label">User Name</label>
-              <div className="input-addon">
-                <input
-                  className="form-control"
-                  type="text"
-                  placeholder="Robert Smith"
-                  autoFocus
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <div className="icon-after icon-green">
-                  <i className="icon-check"></i>
-                </div>
-              </div>
-              <div className="error-block">{error}</div>
+
+            <p className="mb-4 text-3xl font-bold text-left">
+              Sign in to your account
+            </p>
+            <p className="mb-4 text-left text-gray-500">
+              Enter your credentials to access your account
+            </p>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
+                User Name
+              </label>
+              <input
+                id="username"
+                type="text"
+                className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input md:text-base"
+                placeholder="Robert Smith"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
-            <div className="form-group">
-              <label className="control-label">Password</label>
-              <div className="input-addon">
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="relative">
                 <input
                   id="password-field"
-                  className="form-control"
                   type="password"
+                  placeholder="*********"
+                  className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input md:text-base"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <span onClick={handleTogglePassword} className="icon-eye-close field-icon toggle-password"></span>
+
+                <span
+                  onClick={handleTogglePassword}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                >
+                  <i className="icon-eye-close field-icon"></i>
+                </span>
               </div>
             </div>
-            <div className="d-flex align-items-center justify-content-between">
-              <div className="form-group mb-0">
-                <label className="custom-checkbox mb-0">
-                  <span className="checkbox__title">Remember Me</span>
-                  <input
-                    className="checkbox__input"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span className="checkbox__checkmark"></span>
-                </label>
-              </div>
-              <div className="form-group mb-0">
-                <div className="utility">
-                  <p>
-                    <a href="#" className="form-link">
-                      Forgot Password?
-                    </a>
-                  </p>
-                </div>
+            <div className="flex items-center justify-between mb-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="form-checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span className="ml-2 text-sm text-gray-600">Remember Me</span>
+              </label>
+              <div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-500 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
               </div>
             </div>
-            <div className="form-group btn-container">
-              <button type="submit" className="btn btn-xl btn-primary">
+            <div className="mb-4">
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-orange-600 rounded btn btn-primary hover:bg-orange-700"
+                onClick={handleSubmit}
+              >
                 Sign in
               </button>
             </div>
-            <div className="form-group mb-0">
-            <div className="utility">
-              
-                  <p>
-                    Don't have an account?
-                    <a href="#" className="form-link">
-                      Register
-                    </a>
-                  </p>
-                  </div>
-              </div>
+            <div>
+              <p className="text-sm">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-blue-500 hover:underline">
+                  Register
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>
-    </section>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
