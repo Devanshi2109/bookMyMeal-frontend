@@ -12,7 +12,7 @@ const HomePage = () => {
     <div >
       <Navbar />
       <div className="flex-grow flex justify-center items-start p-4">
-        <div className="flex-1 mt-4">
+        <div className="flex-1 mt-16 ">
           <Calendar />
         </div>
         <div>

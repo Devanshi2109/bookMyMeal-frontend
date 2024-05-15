@@ -39,14 +39,14 @@ const BookAMealBtn = () => {
   return (
     <div>
       <button
-        className="absolute px-5 py-3 m-2 text-white transform -translate-y-1/2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-900 top-1/4 right-14"
+        className="absolute px-5 py-3 m-2 text-white transform -translate-y-1/2 bg-blue-600 rounded-lg shadow-md hover:bg-navy top-1/4 right-12"
         onClick={handleBookMeal}
       >
-        Book a Meal
+        Book Meal
       </button>
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-          <div className="w-full max-w-md p-12 bg-white rounded-lg shadow-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 z-10">
+          <div className="w-full max-w-md p-12 bg-white rounded-lg shadow-md ">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl font-bold">Book A Meal</h2>
               <button
