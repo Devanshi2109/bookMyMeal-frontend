@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import Register from "./components/Register";
 import Otp from "./components/Otp";
+import ChangePassword from "./components/ChangePassword";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/otp",
     element: <Otp />,
+  },
+  {
+    path: "/change-password",
+    element: <ChangePassword />,
   },
 ]);
 
