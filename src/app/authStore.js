@@ -21,6 +21,20 @@ const useAuthStore = create((set) => ({
       return { success: false, message: "Login failed" };
     }
   },
+  register: async (name, email, password, confirmPassword) => {
+    try {
+      await axios.post("/auth/signup1", {
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Registration failed", error);
+      return { success: false, message: "Registration failed" };
+    }
+  },
   logout: () => {
     set({ isAuthenticated: false, token: null, user: null });
     localStorage.removeItem("token");
