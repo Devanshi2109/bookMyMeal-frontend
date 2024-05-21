@@ -1,14 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { FaUserCircle, FaCaretDown, FaBars, FaTimes, FaSignOutAlt } from 'react-icons/fa';
-import logo from '../assest/images/logo-white.svg';
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import {
+  FaUserCircle,
+  FaCaretDown,
+  FaBars,
+  FaTimes,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import logo from "../assest/images/logo-white.svg";
 import NotificationIcon from "./NotificationIcon";
+import useAuthStore from "../app/authStore";
 
-const Navbar = ({ loggedInUser, handleLogout }) => {
+const Navbar = ({ loggedInUser }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const Navigate = useNavigate();
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -23,18 +33,21 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
       setIsDropdownOpen(false);
     }
   };
-
+  const handleLogout = () => {
+    logout();
+    Navigate("/login");
+  };
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const isActive = (path) => path === location.pathname;
 
   // Static username for demonstration purposes
-  const staticUserName = 'Harsh';
+  const staticUserName = "Guest User";
 
   return (
     <nav className="bg-navy text-white">
@@ -48,7 +61,9 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `hover:text-gray-300 ${isActive ? 'font-bold border-b-2 border-white' : ''}`
+              `hover:text-gray-300 ${
+                isActive ? "font-bold border-b-2 border-white" : ""
+              }`
             }
           >
             Home
@@ -56,26 +71,31 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
           <NavLink
             to="/about"
             className={({ isActive }) =>
-              `hover:text-gray-300 ${isActive ? 'font-bold border-b-2 border-white' : ''}`
+              `hover:text-gray-300 ${
+                isActive ? "font-bold border-b-2 border-white" : ""
+              }`
             }
           >
             About
           </NavLink>
           <div className="relative flex">
-          <button className="flex items-center text-white hover:text-blue-200">
-          <NotificationIcon />
-              </button>
-            
+            <button className="flex items-center text-white hover:text-blue-200">
+              <NotificationIcon />
+            </button>
+
             <button
               className="flex items-center hover:text-gray-300"
               onClick={toggleDropdown}
             >
               <FaUserCircle className="mr-2" />
-              {staticUserName}
+              {user ? user : staticUserName}
               <FaCaretDown className="ml-1" />
             </button>
             {isDropdownOpen && (
-              <div ref={dropdownRef} className="absolute right-0 top-full mt-2 bg-white text-gray-800 rounded-md shadow-lg z-10 w-48">
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 top-full mt-2 bg-white text-gray-800 rounded-md shadow-lg z-10 w-48"
+              >
                 <NavLink
                   to="/change-password"
                   className="flex items-center px-4 py-2 hover:bg-gray-200"
@@ -106,7 +126,7 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${isActive ? 'font-bold' : ''}`
+              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
             }
             onClick={toggleMobileMenu}
           >
@@ -115,7 +135,7 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
           <NavLink
             to="/about"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${isActive ? 'font-bold' : ''}`
+              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
             }
             onClick={toggleMobileMenu}
           >
@@ -127,7 +147,7 @@ const Navbar = ({ loggedInUser, handleLogout }) => {
               onClick={toggleDropdown}
             >
               <FaUserCircle className="mr-2" />
-              {staticUserName}
+              {user ? user : staticUserName}
               <FaCaretDown className="ml-1" />
             </button>
             {isDropdownOpen && (
