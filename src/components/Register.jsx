@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import AuthLayout from "./AuthLayout";
+import useAuthStore from "../app/authStore";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const Navigate = useNavigate();
+  const register = useAuthStore((state) => state.register);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +25,7 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
       toast.error("Name is required");
@@ -48,6 +51,13 @@ const Register = () => {
       toast.error("Passwords do not match");
       return;
     }
+    const { name, email, pass: password, re_pass: confirmPassword } = formData;
+    const result = await register(name, email, password, confirmPassword);
+    if (result.success) {
+      Navigate("/login"); // Redirect to login page after successful registration
+    } else {
+      toast.error("Something went wrong...!");
+    }
     console.log("Registering user:", formData);
   };
 
@@ -57,31 +67,31 @@ const Register = () => {
         <p className="mb-2 text-2xl font-bold text-left">Sign up</p>
         <p className="text-left text-gray-500">
           Create your account to get started.
-          </p>
+        </p>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
-          <label 
-            htmlFor="name" 
+          <label
+            htmlFor="name"
             className="block text-sm font-medium text-gray-700"
           >
             Name
           </label>
-          <input 
-            id="name" 
-            type="text" 
-            className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input" 
-            value={formData.name} 
-            onChange={handleChange} 
-            name="name" 
+          <input
+            id="name"
+            type="text"
+            className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
+            value={formData.name}
+            onChange={handleChange}
+            name="name"
           />
         </div>
         <div className="mb-2">
-          <label 
+          <label
             htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
-              Email
+            Email
           </label>
           <input
             id="email"
@@ -96,9 +106,9 @@ const Register = () => {
           <label
             htmlFor="pass"
             className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
+          >
+            Password
+          </label>
           <div className="relative">
             <input
               id="pass"
@@ -110,7 +120,8 @@ const Register = () => {
             />
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
@@ -133,22 +144,20 @@ const Register = () => {
             />
             <span
               onClick={() => setShowRePassword(!showRePassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            >
               {showRePassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
         </div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <input 
+            <input
               type="checkbox"
-              id="terms" 
-              className="w-4 h-4 text-indigo-600 transition duration-150 ease-in-out form-checkbox" 
+              id="terms"
+              className="w-4 h-4 text-indigo-600 transition duration-150 ease-in-out form-checkbox"
             />
-            <label 
-              htmlFor="terms" 
-              className="block ml-2 text-sm text-gray-900"
-            >
+            <label htmlFor="terms" className="block ml-2 text-sm text-gray-900">
               I agree to the{" "}
               <Link to="/terms" className="text-blue-600 hover:underline">
                 Terms of Service
@@ -158,7 +167,7 @@ const Register = () => {
         </div>
         <div>
           <button
-            type="submit" 
+            type="submit"
             className="w-full px-4 py-2 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700"
           >
             Sign Up
@@ -167,7 +176,7 @@ const Register = () => {
       </form>
       <div className="mt-4 text-center">
         <p className="text-sm">
-          Already have an account?{" "} 
+          Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">
             Sign in
           </Link>
