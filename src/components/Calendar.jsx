@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import '../index.css'; // Custom CSS for additional styling
+
+moment.locale('en', { week: { dow: 1 } }); // Set the start of the week to Monday
 
 const localizer = momentLocalizer(moment);
 
@@ -44,8 +47,17 @@ const CalendarComponent = ({ viewMode }) => {
       className: backgroundColor + ' opacity-80 px-2 text-white',
     };
   };
-  
-  
+
+  const dayPropGetter = (date) => {
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+    const isHoliday = false; // Add logic to determine if the date is a public holiday
+    if (isWeekend || isHoliday) {
+      return {
+        className: "bg-gray-200 text-gray-500 opacity-50 cursor-not-allowed",
+      };
+    }
+    return {};
+  };
 
   const CustomToolbar = ({ onNavigate, label, date }) => {
     const goToBack = () => {
@@ -72,7 +84,7 @@ const CalendarComponent = ({ viewMode }) => {
   };
 
   return (
-    <div className={`relative ${viewMode === 'homepage' ? 'w-1/2' : 'w-full'} max-w-4xl mx-auto mt-12 right-64 m-8 `}>
+    <div className={`relative ${viewMode === 'homepage' ? 'w-full md:w-3/4 lg:w-1/2' : 'w-full'} max-w-4xl mx-auto md:ml-0 lg:ml-12`}>
       <Calendar
         localizer={localizer}
         events={events}
@@ -88,6 +100,7 @@ const CalendarComponent = ({ viewMode }) => {
           toolbar: CustomToolbar,
         }}
         eventPropGetter={eventStyleGetter}
+        dayPropGetter={dayPropGetter}
         style={{ height: '500px' }}
       />
     </div>
