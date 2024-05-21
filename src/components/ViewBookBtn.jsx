@@ -5,7 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
 
-const ViewBookings = () => {
+const ViewBookBtn = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -57,9 +57,9 @@ const ViewBookings = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center">
       <button
-        className="absolute px-5 py-3 m-2 text-white transform -translate-y-1/2 bg-blue-600 rounded-lg hover:bg-navy shadow-md top-1/4 left-12 "
+        className="w-40 h-12 px-5 py-3 m-2 text-white bg-blue-600 rounded-lg shadow-md hover:bg-navy"
         onClick={handleViewClick}
       >
         View Booking
@@ -117,4 +117,4 @@ const ViewBookings = () => {
   );
 };
 
-export default ViewBookings;
+export default ViewBookBtn;
