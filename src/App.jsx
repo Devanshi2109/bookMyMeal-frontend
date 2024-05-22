@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect } from "react";
 import useAuthStore from "./app/authStore";
 import HomePage from "./components/HomePage";
 import Terms from "./components/Terms";
@@ -10,15 +10,16 @@ import ForgotPassword from "./components/ForgotPassword";
 import Otp from "./components/Otp";
 import ChangePassword from "./components/ChangePassword";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 
 const App = () => {
-  const { checkAuth } = useAuthStore();
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  const router = createBrowserRouter([
+  const routes = [
     {
       path: "/",
       element: <ProtectedRoute element={<HomePage />} />,
@@ -33,25 +34,27 @@ const App = () => {
     },
     {
       path: "/login",
-      element: <Login />,
+      element: <RedirectIfAuthenticated element={<Login />} />,
     },
     {
       path: "/register",
-      element: <Register />,
+      element: <RedirectIfAuthenticated element={<Register />} />,
     },
     {
       path: "/forgot-password",
-      element: <ForgotPassword />,
+      element: <RedirectIfAuthenticated element={<ForgotPassword />} />,
     },
     {
       path: "/otp",
-      element: <Otp />,
+      element: <RedirectIfAuthenticated element={<Otp />} />,
     },
     {
       path: "/change-password",
-      element: <ChangePassword />,
+      element: <ProtectedRoute element={<ChangePassword />} />,
     },
-  ]);
+  ];
+
+  const router = createBrowserRouter(routes);
 
   return <RouterProvider router={router} />;
 };

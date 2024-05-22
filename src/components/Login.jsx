@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -7,7 +7,7 @@ import logo from "../assest/images/logo.svg";
 import useAuthStore from "../app/authStore.js";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -17,33 +17,37 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      toast.error("Please enter both username and password.");
+    if (!email || !password) {
+      toast.error("Please enter both email and password.");
       return;
     }
-    if (!username.trim()) {
-      toast.error("Please enter a username.");
+    if (!email.trim()) {
+      toast.error("Please enter an email.");
       return;
     }
     if (!password.trim()) {
       toast.error("Please enter a password.");
       return;
     }
-    console.log("Username: ", username);
-    console.log("Password:", password);
-    await login(username, password);
-    if (isAuthenticated) {
+    const res = await login(email, password);
+    if (res.success) {
       navigate("/");
     } else {
       toast.error("Login failed. Please check your credentials.");
     }
   };
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <AuthLayout>
       <div className="mb-8 text-center">
-        <div className="flex items-start justify-start mx-auto text-left mb-10">
-          <img src={logo} alt="Rishabh Software" className="mr-4 h-12" />
+        <div className="flex items-start justify-start mx-auto mb-10 text-left">
+          <img src={logo} alt="Rishabh Software" className="h-12 mr-4" />
           <h2 className="text-3xl font-bold text-red-500">Meal Facility</h2>
         </div>
         <p className="mb-2 text-2xl font-bold text-left">
@@ -56,19 +60,19 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
           <label
-            htmlFor="username"
+            htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
-            User Name
+            Email
           </label>
           <input
-            id="username"
-            type="text"
+            id="email"
+            type="email"
             className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
-            placeholder="Robert Smith"
+            placeholder="example@example.com"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="mb-2">
@@ -80,7 +84,7 @@ const Login = () => {
           </label>
           <div className="relative">
             <input
-              id="password-field"
+              id="password"
               type={showPassword ? "text" : "password"}
               placeholder="*********"
               className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
