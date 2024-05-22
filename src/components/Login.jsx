@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -18,19 +18,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Please enter both username and password.");
+      toast.error("Please enter both email and password.");
       return;
     }
     if (!email.trim()) {
-      toast.error("Please enter a username.");
+      toast.error("Please enter an email.");
       return;
     }
     if (!password.trim()) {
       toast.error("Please enter a password.");
       return;
     }
-    console.log("Username: ", email);
-    console.log("Password:", password);
+
+    const res = await login(email, password);
+    if (res.success) {
     await login(email, password);
     if (isAuthenticated) {
       navigate("/");
@@ -38,6 +39,12 @@ const Login = () => {
       toast.error("Login failed. Please check your credentials.");
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <AuthLayout>
@@ -56,13 +63,13 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
           <label
-            htmlFor="username"
+            htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
             Email
           </label>
           <input
-            id="username"
+            id="email"
             type="email"
             className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
             placeholder="example@example.com"
@@ -80,7 +87,7 @@ const Login = () => {
           </label>
           <div className="relative">
             <input
-              id="password-field"
+              id="password"
               type={showPassword ? "text" : "password"}
               placeholder="*"
               className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
