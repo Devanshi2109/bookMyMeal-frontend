@@ -29,8 +29,11 @@ const Login = () => {
       toast.error("Please enter a password.");
       return;
     }
+
     const res = await login(email, password);
     if (res.success) {
+    await login(email, password);
+    if (isAuthenticated) {
       navigate("/");
     } else {
       toast.error("Login failed. Please check your credentials.");
@@ -86,7 +89,7 @@ const Login = () => {
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="*********"
+              placeholder="*"
               className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
