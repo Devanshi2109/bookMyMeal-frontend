@@ -7,7 +7,7 @@ import logo from "../assest/images/logo.svg";
 import useAuthStore from "../app/authStore.js";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -17,11 +17,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
+    if (!email || !password) {
       toast.error("Please enter both username and password.");
       return;
     }
-    if (!username.trim()) {
+    if (!email.trim()) {
       toast.error("Please enter a username.");
       return;
     }
@@ -29,9 +29,9 @@ const Login = () => {
       toast.error("Please enter a password.");
       return;
     }
-    console.log("Username: ", username);
+    console.log("Username: ", email);
     console.log("Password:", password);
-    await login(username, password);
+    await login(email, password);
     if (isAuthenticated) {
       navigate("/");
     } else {
@@ -42,8 +42,8 @@ const Login = () => {
   return (
     <AuthLayout>
       <div className="mb-8 text-center">
-        <div className="flex items-start justify-start mx-auto text-left mb-10">
-          <img src={logo} alt="Rishabh Software" className="mr-4 h-12" />
+        <div className="flex items-start justify-start mx-auto mb-10 text-left">
+          <img src={logo} alt="Rishabh Software" className="h-12 mr-4" />
           <h2 className="text-3xl font-bold text-red-500">Meal Facility</h2>
         </div>
         <p className="mb-2 text-2xl font-bold text-left">
@@ -59,16 +59,16 @@ const Login = () => {
             htmlFor="username"
             className="block text-sm font-medium text-gray-700"
           >
-            User Name
+            Email
           </label>
           <input
             id="username"
-            type="text"
+            type="email"
             className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
-            placeholder="Robert Smith"
+            placeholder="example@example.com"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="mb-2">
@@ -82,7 +82,7 @@ const Login = () => {
             <input
               id="password-field"
               type={showPassword ? "text" : "password"}
-              placeholder="*********"
+              placeholder="*"
               className="block w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
