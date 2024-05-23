@@ -32,14 +32,14 @@ const Login = () => {
 
     const res = await login(email, password);
     if (res.success) {
-    await login(email, password);
-    if (isAuthenticated) {
-      navigate("/");
-    } else {
-      toast.error("Login failed. Please check your credentials.");
+      await login(email, password);
+      if (isAuthenticated) {
+        navigate("/");
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+      }
     }
   };
-
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/");
