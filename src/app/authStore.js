@@ -22,6 +22,8 @@ const useAuthStore = create((set) => ({
       }
 
       const data = await response.json();
+      // console.log("Login response data:", data);
+
       const token = data.jwt;
       const user = data.name;
       const userId = data.userId;
@@ -37,7 +39,6 @@ const useAuthStore = create((set) => ({
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("userId", userId);
 
-      // Optionally set the default header for axios
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       return { success: true, user, userId };
@@ -81,6 +82,8 @@ const useAuthStore = create((set) => ({
     const userJson = localStorage.getItem("user");
     const userId = localStorage.getItem("userId");
     const user = userJson ? JSON.parse(userJson) : null;
+
+    console.log("Checking auth:", { token, user, userId });
 
     if (token && user && userId) {
       set({ isAuthenticated: true, token, user, userId });
