@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+// ViewBookBtn.jsx
+import React, { useState, useEffect } from 'react';
+import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
 import moment from 'moment';
+import axios from 'axios';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import '../index.css';
+
+moment.locale('en', { week: { dow: 1 } });
 
 const localizer = momentLocalizer(moment);
 
@@ -10,8 +15,43 @@ const ViewBookBtn = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      fetchBookings();
+    }
+  }, [isModalOpen]);
+
+  const fetchBookings = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8080/api/bookings/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const bookings = response.data;
+
+      if (Array.isArray(bookings)) {
+        const formattedEvents = bookings.map((booking) => ({
+          title: 'Booked Meal',
+          start: moment(booking.date).toDate(),
+          end: moment(booking.date).toDate(),
+          allDay: true,
+          isBooked: booking.canceled === null,
+          isCanceled: booking.canceled !== null,
+        }));
+
+        setEvents(formattedEvents);
+      } else {
+        console.error('Unexpected response format:', bookings);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+
   const getTotalDaysBooked = () => {
-    
     const startOfMonth = moment(date).startOf('month');
     const endOfMonth = moment(date).endOf('month');
     return events.filter(event =>
@@ -20,7 +60,7 @@ const ViewBookBtn = () => {
     ).reduce((total, event) => {
       const start = moment.max(moment(event.start), startOfMonth);
       const end = moment.min(moment(event.end), endOfMonth);
-      return total + end.diff(start, 'days') + 1; 
+      return total + end.diff(start, 'days') + 1;
     }, 0);
   };
 
@@ -35,25 +75,42 @@ const ViewBookBtn = () => {
   };
 
   const handleViewClick = () => {
-    setEvents([
-      
-      {
-        title: 'Booked',
-        start: new Date(2024, date.getMonth(), 10),
-        end: new Date(2024, date.getMonth(), 15), 
-        allDay: true,
-        isBooked: true,
-      },
-      {
-        title: 'Booked',
-        start: new Date(2024, date.getMonth(), 20), 
-        end: new Date(2024, date.getMonth(), 22), 
-        allDay: true,
-        isBooked: true,
-      },
-      
-    ]);
     setIsModalOpen(true);
+  };
+
+  const CustomToolbar = ({ onNavigate, label, date }) => {
+    const goToBack = () => {
+      onNavigate(Navigate.PREVIOUS);
+    };
+
+    const goToNext = () => {
+      onNavigate(Navigate.NEXT);
+    };
+
+    const goToToday = () => {
+      onNavigate(Navigate.TODAY);
+    };
+
+    return (
+      <div className="rbc-toolbar">
+        <span className="rbc-btn-group">
+          <button type="button" onClick={goToBack}>&lt;</button>
+          <button type="button" onClick={goToToday}>Today</button>
+          <button type="button" onClick={goToNext}>&gt;</button>
+        </span>
+        <span className="rbc-toolbar-label">{moment(date).format('MMMM YYYY')}</span>
+      </div>
+    );
+  };
+
+  const dayPropGetter = (date) => {
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+    if (isWeekend) {
+      return {
+        className: 'bg-gray-300 text-gray-400 opacity-50 cursor-not-allowed',
+      };
+    }
+    return {};
   };
 
   return (
@@ -66,8 +123,8 @@ const ViewBookBtn = () => {
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="relative bg-white p-5 border shadow-lg rounded-md w-full max-w-md">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50" onClick={() => setIsModalOpen(false)}>
+          <div className="relative bg-white p-5 border shadow-lg rounded-md w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <button
               className="absolute top-0 right-0 mt-4 mr-4 text-2xl text-gray-600"
               onClick={() => setIsModalOpen(false)}
@@ -107,6 +164,10 @@ const ViewBookBtn = () => {
               defaultView={Views.MONTH}
               date={date}
               onNavigate={setDate}
+              components={{
+                toolbar: CustomToolbar,
+              }}
+              dayPropGetter={dayPropGetter}
               style={{ height: 400 }}
             />
             <p className="text-center mt-4">Total Days Booked: {getTotalDaysBooked()}</p>
