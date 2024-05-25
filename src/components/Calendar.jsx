@@ -1,48 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
 import moment from 'moment';
+import axios from 'axios';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '../index.css'; // Custom CSS for additional styling
+import '../index.css';
+import DetailsCard from './DetailsCard';
 
-moment.locale('en', { week: { dow: 1 } }); // Set the start of the week to Monday
+moment.locale('en', { week: { dow: 1 } });
 
 const localizer = momentLocalizer(moment);
 
-const CalendarComponent = ({ viewMode }) => {
+const HomepageCalendar = () => {
   const [date, setDate] = useState(new Date());
-  const [events, setEvents] = useState([
-    
-    {
-      title: 'Booked Meal',
-      start: moment().subtract(1, 'days').toDate(),
-      end: moment().subtract(1, 'days').toDate(),
-      allDay: true,
-      isBooked: true,
-    },
-    
-    {
-      title: 'Booking',
-      start: moment().add(1, 'days').toDate(),
-      end: moment().add(1, 'days').toDate(),
-      allDay: true,
-      isBooked: false,
-    },
-    
-  ]);
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const handleSelectSlot = ({ start }) => {
-    console.log("Selected Date: ", start);
+  useEffect(() => {
+    fetchBookings();
+  }, [date]);
+
+  const fetchBookings = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8080/api/bookings/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const bookings = response.data;
+
+      if (Array.isArray(bookings)) {
+        const filteredEvents = bookings.filter((booking) => {
+          const bookingDate = moment(booking.date);
+          return bookingDate.isBetween(moment(), moment().add(90, 'days'), 'day', '[]');
+        });
+
+        const formattedEvents = filteredEvents.map((booking) => ({
+          title: 'Booked Meal',
+          start: moment(booking.date).toDate(),
+          end: moment(booking.date).toDate(),
+          allDay: true,
+          isBooked: booking.canceled === null,
+          isCanceled: booking.canceled !== null,
+          token: booking.token,
+          userId: booking.userId,
+          userName: booking.userName,
+        }));
+
+        setEvents(formattedEvents);
+      } else {
+        console.error('Unexpected response format:', bookings);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     let backgroundColor = '';
-    
-    if (moment(event.start).isBefore(moment(), 'day')) {
+
+    if (event.isCanceled) {
+      backgroundColor = 'bg-red-500';
+    } else if (moment(event.start).isBefore(moment(), 'day')) {
       backgroundColor = 'bg-gray-500';
     } else {
       backgroundColor = 'bg-green-500';
     }
-    
+
     return {
       className: backgroundColor + ' opacity-80 px-2 text-white',
     };
@@ -50,10 +79,9 @@ const CalendarComponent = ({ viewMode }) => {
 
   const dayPropGetter = (date) => {
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-    const isHoliday = false; // Add logic to determine if the date is a public holiday
-    if (isWeekend || isHoliday) {
+    if (isWeekend) {
       return {
-        className: "bg-gray-200 text-gray-500 opacity-50 cursor-not-allowed",
+        className: 'bg-gray-300 text-gray-400 opacity-50 cursor-not-allowed',
       };
     }
     return {};
@@ -67,7 +95,7 @@ const CalendarComponent = ({ viewMode }) => {
     };
 
     const goToNext = () => {
-      if (moment(date).isBefore(moment().add(2, 'months'), 'month')) {
+      if (moment(date).isBefore(moment().add(3, 'months'), 'month')) {
         onNavigate(Navigate.NEXT);
       }
     };
@@ -75,45 +103,43 @@ const CalendarComponent = ({ viewMode }) => {
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
-          <button type="button" onClick={goToBack} disabled={moment(date).isSameOrBefore(moment(), 'month')}>&lt;</button>
+          <button type="button" onClick={goToBack}>&lt;</button>
           <span className="rbc-toolbar-label">{moment(date).format('MMMM YYYY')}</span>
-          <button type="button" onClick={goToNext} disabled={moment(date).isSameOrAfter(moment().add(3, 'months'), 'month')}>&gt;</button>
+          <button type="button" onClick={goToNext}>&gt;</button>
         </span>
       </div>
     );
   };
 
   return (
-    <div className={`relative ${viewMode === 'homepage' ? 'w-full md:w-3/4 lg:w-1/2' : 'w-full'} max-w-4xl mx-auto md:ml-0 lg:ml-12`}>
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        selectable
-        views={{ month: true }}
-        defaultView={Views.MONTH}
-        onSelectSlot={handleSelectSlot}
-        onNavigate={(newDate) => setDate(newDate)}
-        date={date}
-        components={{
-          toolbar: CustomToolbar,
-        }}
-        eventPropGetter={eventStyleGetter}
-        dayPropGetter={dayPropGetter}
-        style={{ height: '500px' }}
-      />
+    <div className="container mx-auto p-4 flex justify-center">
+      <div className="flex flex-col lg:flex-row w-full lg:w-3/4">
+        <div className="w-full lg:w-2/3">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            views={{ month: true }}
+            defaultView={Views.MONTH}
+            onSelectEvent={handleSelectEvent}
+            onNavigate={(newDate) => setDate(newDate)}
+            date={date}
+            components={{
+              toolbar: CustomToolbar,
+            }}
+            eventPropGetter={eventStyleGetter}
+            dayPropGetter={dayPropGetter}
+            style={{ height: '400px', width: '100%' }} // Adjust the height and width here
+          />
+        </div>
+        <div className="w-full lg:w-1/3 mt-4 lg:mt-0 lg:ml-4">
+          <DetailsCard selectedEvent={selectedEvent} />
+        </div>
+      </div>
     </div>
   );
 };
 
-const HomepageCalendar = () => {
-  return <CalendarComponent viewMode="homepage" />;
-};
-
-const ViewBookingCalendar = () => {
-  return <CalendarComponent viewMode="booking" />;
-};
-
 export default HomepageCalendar;
-export { ViewBookingCalendar };

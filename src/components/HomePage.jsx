@@ -6,7 +6,6 @@ import BookAMealBtn from "./BookAMealBtn";
 import CancelAMealBtn from "./CancelAMealBtn";
 import QuickBookBtn from "./QuickBookBtn";
 import ViewBookBtn from "./ViewBookBtn";
-import DetailsCard from "./DetailsCard";
 
 const HomePage = () => {
   return (
@@ -22,18 +21,6 @@ const HomePage = () => {
         </div>
         <div className="flex flex-col items-start lg:flex-row">
           <HomepageCalendar />
-          <DetailsCard
-            title="Meal of the Day"
-            description="No Booking found for selected Date!"
-            menuItems={[
-              "Tuvar Ringan",
-              "Dum Aloo",
-              "Kadhi",
-              "Khichadi",
-              "Tawa Chapati",
-              "Butter Milk",
-            ]}
-          />
         </div>
       </div>
       <Footer />

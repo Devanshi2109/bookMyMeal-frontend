@@ -1,34 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode.react';
+import toast, { Toaster } from 'react-hot-toast';
+import moment from 'moment';
+import menuItems from './menuItems.json';
 
-const DetailsCard = ({ title, description, menuItems }) => {
-  const [details, setDetails] = useState({
-    title: title,
-    description: description,
-    menuItems: menuItems,
-  });
+const DetailsCard = ({ selectedEvent }) => {
+  const [showQR, setShowQR] = useState(false);
+  const [qrCode, setQrCode] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(60); // 1 minute timer
 
-  // Fetch details from API (commented out for now)
-  // useEffect(() => {
-  //   fetch('https://api.example.com/details')
-  //     .then(response => response.json())
-  //     .then(data => setDetails(data))
-  //     .catch(error => console.error('Error fetching details:', error));
-  // }, []);
+  useEffect(() => {
+    let timer;
+    if (showQR) {
+      timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            toast.error('QR code is now invalid.');
+            setShowQR(false);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [showQR]);
+
+  const handleShowQR = () => {
+    setQrCode(selectedEvent.token);
+    setShowQR(true);
+    setTimeLeft(60); // Reset timer
+  };
+
+  const dayOfWeek = selectedEvent ? moment(selectedEvent.start).format('dddd') : moment().format('dddd');
+  const menu = menuItems[dayOfWeek] || [];
+  const isToday = selectedEvent && moment(selectedEvent.start).isSame(moment(), 'day');
+  const displayDate = selectedEvent ? moment(selectedEvent.start).format('dddd, MMMM Do YYYY') : moment().format('dddd, MMMM Do YYYY');
 
   return (
-    <div className="bg-blue-500 text-white rounded-lg shadow-md p-6 ml-4 flex-grow">
-      <h2 className="text-xl font-bold mb-4">{details.title}</h2>
-      <p className="text-gray-200 mb-6">{details.description}</p>
-      {details.menuItems && details.menuItems.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Menu</h3>
-          <ul className="list-disc list-inside">
-            {details.menuItems.map((item, index) => (
-              <li key={index} className="text-gray-100">
-                {item}
-              </li>
-            ))}
-          </ul>
+    <div className="bg-blue-500 text-white rounded-lg shadow-md p-6">
+      <Toaster position="top-right" />
+      <h2 className="text-xl font-bold mb-4">
+        {displayDate} {isToday && <span className="text-sm text-gray-300">(Today)</span>}
+      </h2>
+      <p className="text-gray-200 mb-6">Menu for the day:</p>
+      <ul className="list-disc list-inside">
+        {menu.map((item, index) => (
+          <li key={index} className="text-gray-100">
+            {item}
+          </li>
+        ))}
+      </ul>
+      {selectedEvent && (
+        <button
+          className="mt-4 bg-white text-blue-500 px-4 py-2 rounded shadow"
+          onClick={handleShowQR}
+        >
+          Show QR
+        </button>
+      )}
+      {showQR && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="relative bg-white p-5 border shadow-lg rounded-md w-full max-w-md text-black">
+            <button
+              className="absolute top-0 right-0 mt-4 mr-4 text-2xl text-gray-600"
+              onClick={() => setShowQR(false)}
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-bold mb-4">Booking Details</h2>
+            <p className="mb-2"><strong>User Name:</strong> {selectedEvent.userName}</p>
+            <p className="mb-4"><strong>Booking Date:</strong> {moment(selectedEvent.start).format('MMMM Do YYYY')}</p>
+            <div className="flex justify-center mb-4">
+              <QRCode value={`UserId: ${selectedEvent.userId}, UserName: ${selectedEvent.userName}, BookingDate: ${moment(selectedEvent.start).format('MMMM Do YYYY')}, Token: ${qrCode}`} />
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-red-500">Time left: {timeLeft} seconds</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
