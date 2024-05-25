@@ -9,6 +9,7 @@ const BookAMealBtn = () => {
   const [daysSelected, setDaysSelected] = useState(0);
   const [bookingType, setBookingType] = useState("single");
   const userId = useAuthStore((state) => state.userId);
+  const userName = localStorage.getItem("user");
 
   const handleBookMeal = () => {
     setShowModal(true);
@@ -46,12 +47,49 @@ const BookAMealBtn = () => {
         console.log(result);
         toast.success("Meal booked successfully!");
         setShowModal(false); // Close the modal after successful booking
+
+        // Create notification
+        await createNotification();
+      } else if (response.status === 403) {
+        toast.error("You are not authorized to perform this action.");
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || "Booking failed");
       }
     } catch (error) {
       toast.error(error.message || "An error occurred");
+    }
+  };
+
+  const createNotification = async () => {
+    const notificationData = {
+      userId,
+      userName,
+      startDate: selectedStartDate,
+      endDate: bookingType === "single" ? selectedStartDate : selectedEndDate,
+    };
+    console.log(notificationData);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8080/api/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(notificationData),
+      });
+
+      if (response.ok) {
+        toast.success("Notification sent successfully!");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Notification failed");
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "An error occurred while sending notification"
+      );
     }
   };
 
@@ -211,10 +249,10 @@ const BookAMealBtn = () => {
               <p className="mb-4">Total Days Selected: {daysSelected}</p>
             )}
             <button
-              className="w-full px-5 py-3 m-2 text-white bg-red-600 rounded-lg shadow-md hover:bg-red-800"
+              className="w-full h-12 px-5 py-3 text-white bg-blue-600 rounded-lg shadow-md hover:bg-navy"
               onClick={handleBookAMealBtn}
             >
-              Book Meal
+              Book Now
             </button>
           </div>
         </div>
