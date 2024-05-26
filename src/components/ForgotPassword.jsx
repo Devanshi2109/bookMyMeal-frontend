@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import AuthLayout from "./AuthLayout";
+import { Link } from "react-router-dom";
+import useAuthStore from "../app/authStore";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-
-  const handleSubmit = (e) => {
+  const setEmailId = useAuthStore((state) => state.setEmailId);
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Perform validation
@@ -15,13 +18,30 @@ const ForgotPassword = () => {
       return;
     }
 
-    // Your logic for sending reset password instructions
-    // For demonstration purposes, we'll simulate a successful request
-    setTimeout(() => {
-      toast.success(
-        "Password reset instructions have been sent to your email."
+    try {
+      const response = await fetch(
+        "http://localhost:8080/forgotPassword/verifyMail",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
       );
-    }, 1000);
+      setEmailId(email);
+      if (response.ok) {
+        toast.success("The OTP have been sent to your email.");
+        setTimeout(() => {
+          navigate("/otp");
+        }, 1000);
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to send otp.");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -35,31 +55,31 @@ const ForgotPassword = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label
-            htmlFor="email" 
+            htmlFor="email"
             className="block text-sm font-medium text-gray-700"
-            >
-              Email Address
+          >
+            Email Address
           </label>
-          <input 
-            id="email" 
-            type="email" 
-            className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input" 
-            placeholder="Your Email Address" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+          <input
+            id="email"
+            type="email"
+            className="block w-full px-4 py-3 mt-1 text-sm border border-gray-300 rounded form-input"
+            placeholder="Your Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="flex items-center justify-between mb-4">
           <button
-            type="submit" 
+            type="submit"
             className="w-full px-4 py-3 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700"
-            >
-              Reset Password
-            </button>
+          >
+            Reset Password
+          </button>
         </div>
         <div className="mb-0 text-center">
           <p className="text-sm">
-            Remember your password? 
+            Remember your password?
             <Link to="/login" className="text-blue-600 hover:underline">
               Sign in
             </Link>

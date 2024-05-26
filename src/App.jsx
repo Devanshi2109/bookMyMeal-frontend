@@ -11,6 +11,7 @@ import Otp from "./components/Otp";
 import ChangePassword from "./components/ChangePassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
+import UpdatePassword from "./components/UpdatePassword";
 import AboutUs from "./components/AboutUs";
 
 const App = () => {
@@ -50,13 +51,17 @@ const App = () => {
       element: <RedirectIfAuthenticated element={<Otp />} />,
     },
     {
+      path: "/update-password",
+      element: <RedirectIfAuthenticated element={<UpdatePassword />} />,
+    },
+    {
       path: "/change-password",
       element: <ProtectedRoute element={<ChangePassword />} />,
     },
     {
       path: "/about-us",
       element: <ProtectedRoute element={<AboutUs />} />,
-    }
+    },
   ];
 
   const router = createBrowserRouter(routes);
