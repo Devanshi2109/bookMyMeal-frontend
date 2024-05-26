@@ -11,6 +11,7 @@ import Otp from "./components/Otp";
 import ChangePassword from "./components/ChangePassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
+import UpdatePassword from "./components/UpdatePassword";
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -47,6 +48,10 @@ const App = () => {
     {
       path: "/otp",
       element: <RedirectIfAuthenticated element={<Otp />} />,
+    },
+    {
+      path: "/update-password",
+      element: <RedirectIfAuthenticated element={<UpdatePassword />} />,
     },
     {
       path: "/change-password",

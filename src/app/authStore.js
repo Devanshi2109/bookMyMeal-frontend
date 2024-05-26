@@ -6,6 +6,7 @@ const useAuthStore = create((set) => ({
   token: null,
   user: null,
   userId: null,
+  emailId: null,
 
   login: async (email, password) => {
     try {
@@ -27,21 +28,24 @@ const useAuthStore = create((set) => ({
       const token = data.jwt;
       const user = data.name;
       const userId = data.userId;
+      const emailId = data.email; // Assuming the response contains email
 
       set({
         isAuthenticated: true,
         token,
         user,
         userId,
+        emailId,
       });
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("userId", userId);
+      localStorage.setItem("emailId", emailId);
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      return { success: true, user, userId };
+      return { success: true, user, userId, emailId };
     } catch (error) {
       console.error("Login failed", error);
       set({
@@ -49,6 +53,7 @@ const useAuthStore = create((set) => ({
         token: null,
         user: null,
         userId: null,
+        emailId: null,
       });
       return { success: false, message: "Login failed" };
     }
@@ -70,10 +75,17 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
-    set({ isAuthenticated: false, token: null, user: null, userId: null });
+    set({
+      isAuthenticated: false,
+      token: null,
+      user: null,
+      userId: null,
+      emailId: null,
+    });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userId");
+    localStorage.removeItem("emailId");
     delete axios.defaults.headers.common["Authorization"];
   },
 
@@ -81,14 +93,20 @@ const useAuthStore = create((set) => ({
     const token = localStorage.getItem("token");
     const userJson = localStorage.getItem("user");
     const userId = localStorage.getItem("userId");
+    const emailId = localStorage.getItem("emailId");
     const user = userJson ? JSON.parse(userJson) : null;
 
-    console.log("Checking auth:", { token, user, userId });
+    // console.log("Checking auth:", { token, user, userId, emailId });
 
-    if (token && user && userId) {
-      set({ isAuthenticated: true, token, user, userId });
+    if (token && user && userId && emailId) {
+      set({ isAuthenticated: true, token, user, userId, emailId });
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
+  },
+
+  setEmailId: (email) => {
+    set({ emailId: email });
+    localStorage.setItem("emailId", email);
   },
 }));
 
