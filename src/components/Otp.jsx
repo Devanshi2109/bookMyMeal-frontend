@@ -63,7 +63,7 @@ const Otp = () => {
       toast.error("Please enter the OTP.", { id: "otp-error" });
       return;
     }
-    console.log(emailId);
+
     try {
       const response = await fetch(
         "http://localhost:8080/forgotPassword/verifyOtp",
@@ -72,7 +72,7 @@ const Otp = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ emailId, otp }),
+          body: JSON.stringify({ email: emailId, otp }), // Use 'email' key here
         }
       );
 

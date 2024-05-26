@@ -3,6 +3,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import AuthLayout from "./AuthLayout";
+import useAuthStore from "../app/authStore";
 
 const UpdatePassword = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const UpdatePassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const emailId = useAuthStore((state) => state.emailId);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +47,7 @@ const UpdatePassword = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            email: emailId,
             password: formData.newPassword,
             repeatPassword: formData.confirmPassword,
           }),
