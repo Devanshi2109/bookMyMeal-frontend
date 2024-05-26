@@ -69,14 +69,14 @@ const Navbar = ({ loggedInUser }) => {
             Home
           </NavLink>
           <NavLink
-            to="/about"
+            to="/about-us"
             className={({ isActive }) =>
               `hover:text-gray-300 ${
                 isActive ? "font-bold border-b-2 border-white" : ""
               }`
             }
           >
-            About
+            About Us
           </NavLink>
           <div className="relative flex">
             <button className="flex items-center text-white hover:text-blue-200">
@@ -126,16 +126,20 @@ const Navbar = ({ loggedInUser }) => {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
+              `block px-4 py-2 hover:bg-blue-700 ${
+                isActive ? "font-bold" : ""
+              }`
             }
             onClick={toggleMobileMenu}
           >
             Home
           </NavLink>
           <NavLink
-            to="/about"
+            to="/about-us"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
+              `block px-4 py-2 hover:bg-blue-700 ${
+                isActive ? "font-bold" : ""
+              }`
             }
             onClick={toggleMobileMenu}
           >
