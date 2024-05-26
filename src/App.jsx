@@ -12,6 +12,7 @@ import ChangePassword from "./components/ChangePassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 import UpdatePassword from "./components/UpdatePassword";
+import AboutUs from "./components/AboutUs";
 
 const App = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -56,6 +57,10 @@ const App = () => {
     {
       path: "/change-password",
       element: <ProtectedRoute element={<ChangePassword />} />,
+    },
+    {
+      path: "/about-us",
+      element: <ProtectedRoute element={<AboutUs />} />,
     },
   ];
 
