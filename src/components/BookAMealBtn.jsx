@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import useAuthStore from "../app/authStore";
+import axios from "axios";
 
-const BookAMealBtn = () => {
+const BookAMealBtn = ({ onBookingSuccess }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
@@ -25,7 +26,7 @@ const BookAMealBtn = () => {
       startDate: selectedStartDate,
       endDate: bookingType === "single" ? selectedStartDate : selectedEndDate,
     };
-    console.log(bookingData);
+
     const apiEndpoint =
       bookingType === "single"
         ? "http://localhost:8080/api/meals"
@@ -33,27 +34,29 @@ const BookAMealBtn = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
+      const response = await axios.post(apiEndpoint, bookingData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(bookingData),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
+      if (response.status === 200) {
+        const result = response.data;
         toast.success("Meal booked successfully!");
         setShowModal(false); // Close the modal after successful booking
+
+        // Trigger the onBookingSuccess callback with the result
+        if (typeof onBookingSuccess === "function") {
+          onBookingSuccess(result);
+        }
 
         // Create notification
         await createNotification();
       } else if (response.status === 403) {
         toast.error("You are not authorized to perform this action.");
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
         toast.error(errorData.message || "Booking failed");
       }
     } catch (error) {
@@ -68,22 +71,24 @@ const BookAMealBtn = () => {
       startDate: selectedStartDate,
       endDate: bookingType === "single" ? selectedStartDate : selectedEndDate,
     };
-    console.log(notificationData);
+  
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8080/api/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(notificationData),
-      });
-
-      if (response.ok) {
+      const response = await axios.post(
+        "http://localhost:8080/api/notifications",
+        notificationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
         toast.success("Notification sent successfully!");
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
         toast.error(errorData.message || "Notification failed");
       }
     } catch (error) {
@@ -92,7 +97,7 @@ const BookAMealBtn = () => {
       );
     }
   };
-
+  
   const handleStartDateChange = (event) => {
     setSelectedStartDate(event.target.value);
     calculateDays(event.target.value, selectedEndDate);

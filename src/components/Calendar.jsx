@@ -1,3 +1,4 @@
+// HomepageCalendar.jsx
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
 import moment from 'moment';
@@ -5,6 +6,9 @@ import axios from 'axios';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '../index.css';
 import DetailsCard from './DetailsCard';
+import QuickBookBtn from './QuickBookBtn'; // Import QuickBookBtn component
+import publicHolidays from "../assest/publicHoliday.json";
+import BookAMealBtn from './BookAMealBtn';
 
 moment.locale('en', { week: { dow: 1 } });
 
@@ -111,6 +115,14 @@ const HomepageCalendar = () => {
     );
   };
 
+  // Define the handleBookingSuccess function here
+  const handleBookingSuccess = (result) => {
+    // Update the UI or fetch updated data after successful booking
+    console.log("Booking success!", result);
+    // Assuming you want to fetch updated bookings after successful booking
+    fetchBookings();
+  };
+
   return (
     <div className="container mx-auto p-4 flex justify-center">
       <div className="flex flex-col lg:flex-row w-full lg:w-3/4">
@@ -135,6 +147,8 @@ const HomepageCalendar = () => {
           />
         </div>
         <div className="w-full lg:w-1/3 mt-4 lg:mt-0 lg:ml-4">
+          <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
+          <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
           <DetailsCard selectedEvent={selectedEvent} />
         </div>
       </div>
