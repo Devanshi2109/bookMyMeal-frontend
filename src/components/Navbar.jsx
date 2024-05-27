@@ -1,24 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import {
-  FaUserCircle,
-  FaCaretDown,
-  FaBars,
-  FaTimes,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaUserCircle, FaCaretDown, FaBars, FaTimes, FaSignOutAlt,} from "react-icons/fa";
 import logo from "../assest/images/logo-white.svg";
 import NotificationIcon from "./NotificationIcon";
 import useAuthStore from "../app/authStore";
+import LogoutConfirmationModal from "./LogoutConfirmation"; // Import the modal component
 
 const Navbar = ({ loggedInUser }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // State for logout modal
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -28,15 +26,33 @@ const Navbar = ({ loggedInUser }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const toggleMobileDropdown = () => {
+    setIsMobileDropdownOpen(!isMobileDropdownOpen);
+  };
+
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsDropdownOpen(false);
     }
+    if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+      setIsMobileDropdownOpen(false);
+    }
   };
+
   const handleLogout = () => {
-    logout();
-    Navigate("/login");
+    setIsLogoutModalOpen(true); // Open the logout confirmation modal
   };
+
+  const confirmLogout = () => {
+    logout();
+    navigate("/login");
+    setIsLogoutModalOpen(false); // Close the modal after logout
+  };
+
+  const closeLogoutModal = () => {
+    setIsLogoutModalOpen(false); // Close the modal without logging out
+  };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -148,14 +164,14 @@ const Navbar = ({ loggedInUser }) => {
           <div>
             <button
               className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
-              onClick={toggleDropdown}
+              onClick={toggleMobileDropdown}
             >
               <FaUserCircle className="mr-2" />
               {user ? user : staticUserName}
               <FaCaretDown className="ml-1" />
             </button>
-            {isDropdownOpen && (
-              <div className="bg-blue-700 text-white">
+            {isMobileDropdownOpen && (
+              <div ref={mobileDropdownRef} className="bg-blue-700 text-white">
                 <NavLink
                   to="/change-password"
                   className="block px-4 py-2 hover:bg-blue-600"
@@ -175,6 +191,11 @@ const Navbar = ({ loggedInUser }) => {
           </div>
         </div>
       )}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={closeLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </nav>
   );
 };

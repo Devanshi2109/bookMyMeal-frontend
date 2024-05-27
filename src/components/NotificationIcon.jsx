@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FaBell, FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
 
 const NotificationIcon = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -11,22 +12,19 @@ const NotificationIcon = () => {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:8080/api/notifications?userId=${userId}`,
         {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.ok) {
-        const data = await response.json();
+      if (response.status === 200) {
+        const data = response.data;
         setNotifications(data);
-        setUnreadCount(
-          data.filter((notification) => !notification.read).length
-        );
+        setUnreadCount(data.filter((notification) => !notification.read).length);
       } else {
         console.error("Failed to fetch notifications");
       }
@@ -37,17 +35,16 @@ const NotificationIcon = () => {
 
   const clearNotifications = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/notifications?userId=${userId}`,
+      const response = await axios.delete(
+        `http://localhost:8080/api/notifications/deleteAll`,
         {
-          method: "DELETE",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.ok) {
+      if (response.status === 204) {
         console.log("Notifications cleared");
         setNotifications([]);
         setUnreadCount(0);
@@ -58,32 +55,25 @@ const NotificationIcon = () => {
       console.error("Error clearing notifications:", error);
     }
   };
+  
 
   const deleteNotification = async (notificationId) => {
     try {
-      const response = await fetch(
+      const response = await axios.delete(
         `http://localhost:8080/api/notifications/${notificationId}`,
         {
-          method: "DELETE",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.ok) {
+      if (response.status === 204) {
         console.log(`Notification ${notificationId} deleted`);
-        setNotifications(
-          notifications.filter(
-            (notification) => notification.id !== notificationId
-          )
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification.id !== notificationId)
         );
-        setUnreadCount(
-          notifications.filter(
-            (notification) =>
-              notification.id !== notificationId && !notification.read
-          ).length
-        );
+        setUnreadCount((prevCount) => prevCount - 1);
       } else {
         console.error("Failed to delete notification");
       }
@@ -93,13 +83,7 @@ const NotificationIcon = () => {
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen((prevState) => {
-      if (!prevState) {
-        fetchNotifications();
-      }
-      return !prevState;
-    });
-    setUnreadCount(0); // Reset unread count when dropdown is opened
+    setIsDropdownOpen((prevState) => !prevState);
   };
 
   const handleClickOutside = (event) => {
@@ -133,7 +117,7 @@ const NotificationIcon = () => {
         {unreadCount > 0 && (
           <span
             className="absolute flex items-center justify-center w-4 h-4 text-xs text-white bg-red-600 rounded-full"
-            style={{ top: "0", right: "0", transform: "translate(50%, -50%)" }}
+            style={{ top: "-8px", right: "8px" }}
           >
             {unreadCount}
           </span>
