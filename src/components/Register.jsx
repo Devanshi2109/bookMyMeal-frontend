@@ -11,17 +11,28 @@ const Register = () => {
     email: "",
     pass: "",
     re_pass: "",
+    terms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
   const Navigate = useNavigate();
   const register = useAuthStore((state) => state.register);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
@@ -35,12 +46,16 @@ const Register = () => {
       toast.error("Email is required");
       return;
     }
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!validateEmail(formData.email)) {
       toast.error("Email is invalid");
       return;
     }
     if (!formData.pass.trim()) {
       toast.error("Password is required");
+      return;
+    }
+    if (!validatePassword(formData.pass)) {
+      toast.error("Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.");
       return;
     }
     if (!formData.re_pass.trim()) {
@@ -49,6 +64,10 @@ const Register = () => {
     }
     if (formData.pass.trim() !== formData.re_pass.trim()) {
       toast.error("Passwords do not match");
+      return;
+    }
+    if (!formData.terms) {
+      toast.error("You must agree to the Terms and Conditions and Privacy Policy");
       return;
     }
     const { name, email, pass: password, re_pass: confirmPassword } = formData;
@@ -155,12 +174,19 @@ const Register = () => {
             <input
               type="checkbox"
               id="terms"
+              name="terms"
               className="w-4 h-4 text-indigo-600 transition duration-150 ease-in-out form-checkbox"
+              checked={formData.terms}
+              onChange={handleChange}
             />
             <label htmlFor="terms" className="block ml-2 text-sm text-gray-900">
               I agree to the{" "}
               <Link to="/terms" className="text-blue-600 hover:underline">
                 Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="text-blue-600 hover:underline">
+                Privacy Policy
               </Link>
             </label>
           </div>
