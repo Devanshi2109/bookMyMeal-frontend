@@ -1,4 +1,3 @@
-// HomepageCalendar.jsx
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
 import moment from 'moment';
@@ -6,9 +5,9 @@ import axios from 'axios';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '../index.css';
 import DetailsCard from './DetailsCard';
-import QuickBookBtn from './QuickBookBtn'; // Import QuickBookBtn component
-import publicHolidays from "../assest/publicHoliday.json";
+import QuickBookBtn from './QuickBookBtn';
 import BookAMealBtn from './BookAMealBtn';
+import publicHolidays from "../assest/publicHoliday.json";
 
 moment.locale('en', { week: { dow: 1 } });
 
@@ -35,22 +34,20 @@ const HomepageCalendar = () => {
       const bookings = response.data;
 
       if (Array.isArray(bookings)) {
-        const filteredEvents = bookings.filter((booking) => {
-          const bookingDate = moment(booking.date);
-          return bookingDate.isBetween(moment(), moment().add(90, 'days'), 'day', '[]');
-        });
-
-        const formattedEvents = filteredEvents.map((booking) => ({
-          title: 'Booked Meal',
+        const formattedEvents = bookings.map((booking) => ({
+          id: booking.id,
+          title: booking.canceled ? 'Cancelled Meal' : 'Booked Meal',
           start: moment(booking.date).toDate(),
           end: moment(booking.date).toDate(),
           allDay: true,
-          isBooked: booking.canceled === null,
-          isCanceled: booking.canceled !== null,
+          isBooked: !booking.canceled,
+          isCanceled: booking.canceled,
           token: booking.token,
           userId: booking.userId,
           userName: booking.userName,
+          mealId: booking.mealId,
         }));
+        console.log(formattedEvents);
 
         setEvents(formattedEvents);
       } else {
@@ -81,13 +78,27 @@ const HomepageCalendar = () => {
     };
   };
 
+  const isPublicHoliday = (date) => {
+    const formattedDate = moment(date).format('YYYY-MM-DD');
+    return publicHolidays.includes(formattedDate);
+  };
+
   const dayPropGetter = (date) => {
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-    if (isWeekend) {
+    const isCurrentMonth = moment(date).isSame(date, 'month');
+
+    if (!isCurrentMonth) {
+      return {
+        className: 'hidden-day',
+      };
+    }
+
+    if (isWeekend || isPublicHoliday(date)) {
       return {
         className: 'bg-gray-300 text-gray-400 opacity-50 cursor-not-allowed',
       };
     }
+
     return {};
   };
 
@@ -115,12 +126,14 @@ const HomepageCalendar = () => {
     );
   };
 
-  // Define the handleBookingSuccess function here
   const handleBookingSuccess = (result) => {
-    // Update the UI or fetch updated data after successful booking
-    console.log("Booking success!", result);
-    // Assuming you want to fetch updated bookings after successful booking
     fetchBookings();
+    console.log("Booking success!", result);
+  };
+
+  const handleCancelBookingSuccess = () => {
+    fetchBookings();
+    console.log("Booking canceled successfully.");
   };
 
   return (
@@ -136,6 +149,7 @@ const HomepageCalendar = () => {
             views={{ month: true }}
             defaultView={Views.MONTH}
             onSelectEvent={handleSelectEvent}
+            onSelectSlot={(slotInfo) => setDate(slotInfo.start)}
             onNavigate={(newDate) => setDate(newDate)}
             date={date}
             components={{
@@ -143,13 +157,13 @@ const HomepageCalendar = () => {
             }}
             eventPropGetter={eventStyleGetter}
             dayPropGetter={dayPropGetter}
-            style={{ height: '400px', width: '100%' }} // Adjust the height and width here
+            style={{ height: '400px', width: '100%' }}
           />
         </div>
         <div className="w-full lg:w-1/3 mt-4 lg:mt-0 lg:ml-4">
           <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
           <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
-          <DetailsCard selectedEvent={selectedEvent} />
+          <DetailsCard selectedEvent={selectedEvent} cancelBooking={handleCancelBookingSuccess} />
         </div>
       </div>
     </div>
