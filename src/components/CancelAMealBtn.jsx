@@ -1,24 +1,17 @@
+// CancelAMealBtn.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-const CancelAMealBtn = ({ mealId, bookingDate, onCancelSuccess }) => {
+const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
   const [showModal, setShowModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleCancel = () => {
-    const now = new Date();
-    const cutoffTime = new Date(bookingDate);
-    cutoffTime.setDate(cutoffTime.getDate() - 1);
-    cutoffTime.setHours(22, 0, 0, 0); // 10 PM the day prior
-
-    if (now > cutoffTime) {
-      setIsDisabled(true);
-      toast.error('Cancellation is only available before 10 PM the day prior.');
-    } else {
-      setShowModal(true);
-    }
+    setShowModal(true);
   };
+
+  console.log("mealId:", mealId);
 
   const handleConfirm = async () => {
     try {

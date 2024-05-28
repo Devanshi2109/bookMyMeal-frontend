@@ -1,4 +1,4 @@
-// DetailsCard.js
+// DetailsCard.jsx
 import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode.react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -12,6 +12,7 @@ const DetailsCard = ({ selectedEvent, cancelBooking }) => {
   const [qrCode, setQrCode] = useState(null);
   const [timeLeft, setTimeLeft] = useState(60); // 1 minute timer
   const userName = useAuthStore((state) => state.user);
+  
 
   useEffect(() => {
     let timer;
@@ -37,13 +38,14 @@ const DetailsCard = ({ selectedEvent, cancelBooking }) => {
     setShowQR(true);
     setTimeLeft(60); // Reset timer
   };
-
+  
+  
   const dayOfWeek = selectedEvent ? moment(selectedEvent.start).format('dddd') : moment().format('dddd');
   const menu = menuItems[dayOfWeek] || [];
   const isToday = selectedEvent && moment(selectedEvent.start).isSame(moment(), 'day');
   const displayDate = selectedEvent ? moment(selectedEvent.start).format('dddd, MMMM Do YYYY') : moment().format('dddd, MMMM Do YYYY');
   const isPast = selectedEvent && moment(selectedEvent.start).isBefore(moment(), 'day');
-
+  
   return (
     <div className="bg-blue-500 text-white rounded-lg shadow-md p-6">
       <Toaster position="top-right" />
@@ -67,7 +69,8 @@ const DetailsCard = ({ selectedEvent, cancelBooking }) => {
         </button>
       )}
       {selectedEvent && !isPast && (
-        <CancelAMealBtn mealId={selectedEvent.id} bookingDate={selectedEvent.start} onCancelSuccess={cancelBooking} />
+        <CancelAMealBtn mealId={selectedEvent.mealId} onCancelSuccess={cancelBooking} />
+
       )}
       {showQR && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
@@ -84,6 +87,7 @@ const DetailsCard = ({ selectedEvent, cancelBooking }) => {
             <div className="flex justify-center mb-4">
               <QRCode value={`UserId: ${selectedEvent.userId}, UserName: ${userName}, BookingDate: ${moment(selectedEvent.start).format('MMMM Do YYYY')}, Token: ${qrCode}`} />
             </div>
+            
             <div className="mt-4 text-center">
               <p className="text-red-500">Time left: {timeLeft} seconds</p>
             </div>
@@ -95,4 +99,3 @@ const DetailsCard = ({ selectedEvent, cancelBooking }) => {
 };
 
 export default DetailsCard;
-
