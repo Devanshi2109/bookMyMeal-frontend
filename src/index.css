@@ -68,3 +68,9 @@
 .rbc-day-bg.bg-green-500 .rbc-date-cell span {
   background-color: #4caf50;
 }
+
+.hidden-day {
+  display: none;
+}
+
+
