@@ -37,20 +37,21 @@ const HomepageCalendar = () => {
       const bookings = response.data;
 
       if (Array.isArray(bookings)) {
-        const formattedEvents = bookings.map((booking) => ({
-          id: booking.id,
-          title: booking.canceled ? "Cancelled Meal" : "Booked Meal",
-          start: moment(booking.date).toDate(),
-          end: moment(booking.date).toDate(),
-          allDay: true,
-          isBooked: !booking.canceled,
-          isCanceled: booking.canceled,
-          token: booking.token,
-          userId: booking.userId,
-          userName: booking.userName,
-          mealId: booking.mealId,
-        }));
-        console.log(formattedEvents);
+        const formattedEvents = bookings
+          .filter((booking) => !booking.canceled) // Filter out canceled events
+          .map((booking) => ({
+            id: booking.id,
+            title: 'Booked Meal',
+            start: moment(booking.date).toDate(),
+            end: moment(booking.date).toDate(),
+            allDay: true,
+            isBooked: !booking.canceled,
+            token: booking.token,
+            userId: booking.userId,
+            userName: booking.userName,
+            mealId: booking.mealId,
+            date: booking.date,
+          }));
 
         setEvents(formattedEvents);
       } else {
@@ -68,10 +69,8 @@ const HomepageCalendar = () => {
   const eventStyleGetter = (event, start, end, isSelected) => {
     let backgroundColor = "";
 
-    if (event.isCanceled) {
-      backgroundColor = "bg-red-500";
-    } else if (moment(event.start).isBefore(moment(), "day")) {
-      backgroundColor = "bg-gray-500";
+    if (moment(event.start).isBefore(moment(), 'day')) {
+      backgroundColor = 'bg-gray-500';
     } else {
       backgroundColor = "bg-green-500";
     }

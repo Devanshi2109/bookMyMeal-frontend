@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
+const CancelAMealBtn = ({ mealId, date, onCancelSuccess }) => {
   const [showModal, setShowModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -20,19 +20,16 @@ const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
           },
         }
       );
-
+      
       if (response.status === 200) {
         toast.success("Booking canceled.");
         onCancelSuccess(mealId); // Notify parent component about the cancellation
-        await axios.post(
-          "http://localhost:8080/api/notifications",
-          {
-            userId: localStorage.getItem("userId"),
-            message: "Your booking has been canceled.",
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+        await axios.post('http://localhost:8080/api/notifications?notificationType=cancellation', {
+          userId: localStorage.getItem('userId'),
+          startDate:  date,
+        }, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           }
         );
