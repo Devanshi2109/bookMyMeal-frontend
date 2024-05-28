@@ -1,7 +1,6 @@
-// CancelAMealBtn.jsx
-import React, { useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
   const [showModal, setShowModal] = useState(false);
@@ -11,32 +10,37 @@ const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
     setShowModal(true);
   };
 
-  console.log("mealId:", mealId);
-
   const handleConfirm = async () => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/bookings/${mealId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await axios.delete(
+        `http://localhost:8080/api/bookings/${mealId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
-        toast.success('Booking canceled.');
+        toast.success("Booking canceled.");
         onCancelSuccess(mealId); // Notify parent component about the cancellation
-        await axios.post('http://localhost:8080/api/notifications', {
-          userId: localStorage.getItem('userId'),
-          message: 'Your booking has been canceled.',
-        }, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        await axios.post(
+          "http://localhost:8080/api/notifications",
+          {
+            userId: localStorage.getItem("userId"),
+            message: "Your booking has been canceled.",
           },
-        });
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
       } else {
-        toast.error('Failed to cancel booking.');
+        toast.error("Failed to cancel booking.");
       }
     } catch (error) {
-      toast.error('An error occurred while canceling the booking.');
+      toast.error("An error occurred while canceling the booking.");
     }
     setShowModal(false);
   };
@@ -44,7 +48,7 @@ const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
   return (
     <>
       <button
-        className="w-40 h-12 px-5 py-3 m-2 text-white bg-red-600 rounded-lg shadow-md hover:bg-red-800"
+        className="w-40 h-12 px-5 py-3 m-2 text-red-600 bg-white border border-red-600 rounded-lg shadow-md hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleCancel}
         disabled={isDisabled}
       >
@@ -52,8 +56,8 @@ const CancelAMealBtn = ({ mealId, onCancelSuccess }) => {
       </button>
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 text-black">
-            <h2 className="text-xl font-bold mb-4">Confirm Cancellation</h2>
+          <div className="p-6 text-black bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Confirm Cancellation</h2>
             <p>Are you sure you want to cancel this booking?</p>
             <div className="flex justify-end mt-4">
               <button

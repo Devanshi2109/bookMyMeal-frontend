@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer, Views, Navigate } from 'react-big-calendar';
-import moment from 'moment';
-import axios from 'axios';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '../index.css';
-import DetailsCard from './DetailsCard';
-import QuickBookBtn from './QuickBookBtn';
-import BookAMealBtn from './BookAMealBtn';
+import React, { useState, useEffect } from "react";
+import { Calendar, momentLocalizer, Views, Navigate } from "react-big-calendar";
+import moment from "moment";
+import axios from "axios";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "../index.css";
+import DetailsCard from "./DetailsCard";
+import QuickBookBtn from "./QuickBookBtn";
+import BookAMealBtn from "./BookAMealBtn";
 import publicHolidays from "../assest/publicHoliday.json";
 
-moment.locale('en', { week: { dow: 1 } });
+moment.locale("en", { week: { dow: 1 } });
 
 const localizer = momentLocalizer(moment);
 
@@ -24,19 +24,22 @@ const HomepageCalendar = () => {
 
   const fetchBookings = async () => {
     try {
-      const userId = localStorage.getItem('userId');
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8080/api/bookings/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:8080/api/bookings/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const bookings = response.data;
 
       if (Array.isArray(bookings)) {
         const formattedEvents = bookings.map((booking) => ({
           id: booking.id,
-          title: booking.canceled ? 'Cancelled Meal' : 'Booked Meal',
+          title: booking.canceled ? "Cancelled Meal" : "Booked Meal",
           start: moment(booking.date).toDate(),
           end: moment(booking.date).toDate(),
           allDay: true,
@@ -51,10 +54,10 @@ const HomepageCalendar = () => {
 
         setEvents(formattedEvents);
       } else {
-        console.error('Unexpected response format:', bookings);
+        console.error("Unexpected response format:", bookings);
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error("Error fetching bookings:", error);
     }
   };
 
@@ -63,39 +66,39 @@ const HomepageCalendar = () => {
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
-    let backgroundColor = '';
+    let backgroundColor = "";
 
     if (event.isCanceled) {
-      backgroundColor = 'bg-red-500';
-    } else if (moment(event.start).isBefore(moment(), 'day')) {
-      backgroundColor = 'bg-gray-500';
+      backgroundColor = "bg-red-500";
+    } else if (moment(event.start).isBefore(moment(), "day")) {
+      backgroundColor = "bg-gray-500";
     } else {
-      backgroundColor = 'bg-green-500';
+      backgroundColor = "bg-green-500";
     }
 
     return {
-      className: backgroundColor + ' opacity-80 px-2 text-white',
+      className: backgroundColor + " opacity-80 px-2 text-white",
     };
   };
 
   const isPublicHoliday = (date) => {
-    const formattedDate = moment(date).format('YYYY-MM-DD');
+    const formattedDate = moment(date).format("YYYY-MM-DD");
     return publicHolidays.includes(formattedDate);
   };
 
   const dayPropGetter = (date) => {
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-    const isCurrentMonth = moment(date).isSame(date, 'month');
+    const isCurrentMonth = moment(date).isSame(date, "month");
 
     if (!isCurrentMonth) {
       return {
-        className: 'hidden-day',
+        className: "hidden-day",
       };
     }
 
     if (isWeekend || isPublicHoliday(date)) {
       return {
-        className: 'bg-gray-300 text-gray-400 opacity-50 cursor-not-allowed',
+        className: "bg-gray-300 text-gray-400 opacity-50 cursor-not-allowed",
       };
     }
 
@@ -104,13 +107,13 @@ const HomepageCalendar = () => {
 
   const CustomToolbar = ({ onNavigate, label, date }) => {
     const goToBack = () => {
-      if (moment(date).isAfter(moment(), 'month')) {
+      if (moment(date).isAfter(moment(), "month")) {
         onNavigate(Navigate.PREVIOUS);
       }
     };
 
     const goToNext = () => {
-      if (moment(date).isBefore(moment().add(3, 'months'), 'month')) {
+      if (moment(date).isBefore(moment().add(3, "months"), "month")) {
         onNavigate(Navigate.NEXT);
       }
     };
@@ -118,9 +121,15 @@ const HomepageCalendar = () => {
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
-          <button type="button" onClick={goToBack}>&lt;</button>
-          <span className="rbc-toolbar-label">{moment(date).format('MMMM YYYY')}</span>
-          <button type="button" onClick={goToNext}>&gt;</button>
+          <button type="button" onClick={goToBack}>
+            &lt;
+          </button>
+          <span className="rbc-toolbar-label">
+            {moment(date).format("MMMM YYYY")}
+          </span>
+          <button type="button" onClick={goToNext}>
+            &gt;
+          </button>
         </span>
       </div>
     );
@@ -137,8 +146,8 @@ const HomepageCalendar = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 flex justify-center">
-      <div className="flex flex-col lg:flex-row w-full lg:w-3/4">
+    <div className="container flex justify-center p-4 mx-auto">
+      <div className="flex flex-col w-full lg:flex-row lg:w-3/4">
         <div className="w-full lg:w-2/3">
           <Calendar
             localizer={localizer}
@@ -157,13 +166,18 @@ const HomepageCalendar = () => {
             }}
             eventPropGetter={eventStyleGetter}
             dayPropGetter={dayPropGetter}
-            style={{ height: '400px', width: '100%' }}
+            style={{ height: "400px", width: "100%" }}
           />
         </div>
-        <div className="w-full lg:w-1/3 mt-4 lg:mt-0 lg:ml-4">
-          <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
-          <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
-          <DetailsCard selectedEvent={selectedEvent} cancelBooking={handleCancelBookingSuccess} />
+        <div className="flex flex-col w-full mt-4 lg:w-1/3 lg:mt-0 lg:ml-4">
+          <div className="flex justify-between mb-4">
+            <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
+            <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
+          </div>
+          <DetailsCard
+            selectedEvent={selectedEvent}
+            cancelBooking={handleCancelBookingSuccess}
+          />
         </div>
       </div>
     </div>
