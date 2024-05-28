@@ -24,7 +24,9 @@ const NotificationIcon = () => {
       if (response.status === 200) {
         const data = response.data;
         setNotifications(data);
-        setUnreadCount(data.filter((notification) => !notification.read).length);
+        setUnreadCount(
+          data.filter((notification) => !notification.read).length
+        );
       } else {
         console.error("Failed to fetch notifications");
       }
@@ -35,19 +37,25 @@ const NotificationIcon = () => {
 
   const clearNotifications = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/notifications/deleteAll`,
+      const response = await fetch(
+        `http://localhost:8080/api/notifications?userId=${userId}`,
         {
+          method: "DELETE",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
+
       if (response.status === 204) {
         console.log("Notifications cleared");
         setNotifications([]);
         setUnreadCount(0);
+      } else if (response.status === 403) {
+        console.error(
+          "Access forbidden: Invalid token or insufficient permissions."
+        );
       } else {
         console.error("Failed to clear notifications");
       }
@@ -55,7 +63,6 @@ const NotificationIcon = () => {
       console.error("Error clearing notifications:", error);
     }
   };
-  
 
   const deleteNotification = async (notificationId) => {
     try {
@@ -71,7 +78,9 @@ const NotificationIcon = () => {
       if (response.status === 204) {
         console.log(`Notification ${notificationId} deleted`);
         setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification.id !== notificationId)
+          prevNotifications.filter(
+            (notification) => notification.id !== notificationId
+          )
         );
         setUnreadCount((prevCount) => prevCount - 1);
       } else {
