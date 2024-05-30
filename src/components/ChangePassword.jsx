@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import AuthLayout from "./AuthLayout";
@@ -13,6 +13,8 @@ const ChangePassword = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +24,7 @@ const ChangePassword = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.currentPassword.trim()) {
       toast.error("Current password is required");
@@ -40,19 +42,85 @@ const ChangePassword = () => {
       toast.error("Passwords do not match");
       return;
     }
-    console.log("Changing password:", formData);
-    // Add the password change logic
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/change-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            id: userId,
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword,
+          }),
+        }
+      );
+
+      const responseText = await response.text();
+      console.log("Raw Response:", responseText); // Log the raw response
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        if (response.ok) {
+          toast.success("Password changed successfully");
+          setFormData({
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+          });
+          // Redirect to home page after 1 second
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+          return;
+        } else {
+          toast.error("An error occurred: Invalid JSON response");
+          console.error("JSON parsing error:", jsonError);
+          return;
+        }
+      }
+
+      if (response.ok) {
+        toast.success(data.message || "Password changed successfully");
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        // Redirect to home page after 1 second
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        toast.error(data.message || "An error occurred");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      toast.error("An error occurred");
+    }
   };
 
   return (
     <AuthLayout>
       <div className="mb-8 text-center">
         <h1 className="mb-4 text-3xl font-bold">Change Your Password</h1>
-        <p className="mb-4 text-gray-500">Enter your current and new password to change your password.</p>
+        <p className="mb-4 text-gray-500">
+          Enter your current and new password to change your password.
+        </p>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">Current Password</label>
+          <label
+            htmlFor="currentPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Current Password
+          </label>
           <div className="relative">
             <input
               id="currentPassword"
@@ -62,13 +130,21 @@ const ChangePassword = () => {
               onChange={handleChange}
               name="currentPassword"
             />
-            <span onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+            <span
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            >
               {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
         </div>
         <div className="mb-4">
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
+          <label
+            htmlFor="newPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            New Password
+          </label>
           <div className="relative">
             <input
               id="newPassword"
@@ -78,13 +154,21 @@ const ChangePassword = () => {
               onChange={handleChange}
               name="newPassword"
             />
-            <span onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+            <span
+              onClick={() => setShowNewPassword(!showNewPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            >
               {showNewPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
         </div>
         <div className="mb-4">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Confirm New Password
+          </label>
           <div className="relative">
             <input
               id="confirmPassword"
@@ -94,19 +178,29 @@ const ChangePassword = () => {
               onChange={handleChange}
               name="confirmPassword"
             />
-            <span onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+            <span
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            >
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
         </div>
         <div>
-          <button type="submit" className="w-full px-4 py-3 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700">Change Password</button>
+          <button
+            type="submit"
+            className="w-full px-4 py-3 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700"
+          >
+            Change Password
+          </button>
         </div>
       </form>
       <div className="mt-4 text-center">
         <p className="text-sm">
           Remembered your password?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">Sign in</Link>
+          <Link to="/" className="text-blue-600 hover:underline">
+            Home
+          </Link>
         </p>
       </div>
       <Toaster position="top-right" />
