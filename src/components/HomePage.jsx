@@ -9,7 +9,7 @@ const HomePage = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="container flex-grow px-4 mx-auto">
-        <div className="flex flex-wrap justify-center gap-4 my-8">
+        <div className="flex flex-wrap gap-4 my-8 ml-2">
           <ViewBookBtn />
         </div>
         <div className="flex flex-col items-start lg:flex-row">
