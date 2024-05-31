@@ -41,7 +41,7 @@ const HomepageCalendar = () => {
           .filter((booking) => !booking.canceled) // Filter out canceled events
           .map((booking) => ({
             id: booking.id,
-            title: 'Booked Meal',
+            title: 'Booked',
             start: moment(booking.date).toDate(),
             end: moment(booking.date).toDate(),
             allDay: true,
@@ -51,6 +51,7 @@ const HomepageCalendar = () => {
             userName: booking.userName,
             mealId: booking.mealId,
             date: booking.date,
+            isRedeemed: booking.isRedeemed,
           }));
 
         setEvents(formattedEvents);
@@ -69,7 +70,7 @@ const HomepageCalendar = () => {
   const eventStyleGetter = (event, start, end, isSelected) => {
     let backgroundColor = "";
 
-    if (moment(event.start).isBefore(moment(), 'day')) {
+    if (moment(event.start).isBefore(moment(), 'day') || event.isRedeemed) {
       backgroundColor = 'bg-gray-500';
     } else {
       backgroundColor = "bg-green-500";
@@ -145,41 +146,41 @@ const HomepageCalendar = () => {
   };
 
   return (
-    <div className="container flex justify-center p-4 mx-auto">
-      <div className="flex flex-col w-full lg:flex-row lg:w-3/4">
-        <div className="w-full lg:w-2/3">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            selectable
-            views={{ month: true }}
-            defaultView={Views.MONTH}
-            onSelectEvent={handleSelectEvent}
-            onSelectSlot={(slotInfo) => setDate(slotInfo.start)}
-            onNavigate={(newDate) => setDate(newDate)}
-            date={date}
-            components={{
-              toolbar: CustomToolbar,
-            }}
-            eventPropGetter={eventStyleGetter}
-            dayPropGetter={dayPropGetter}
-            style={{ height: "400px", width: "100%" }}
-          />
-        </div>
-        <div className="flex flex-col w-full mt-4 lg:w-1/3 lg:mt-0 lg:ml-4">
-          <div className="flex justify-between mb-4">
-            <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
-            <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
-          </div>
-          <DetailsCard
-            selectedEvent={selectedEvent}
-            cancelBooking={handleCancelBookingSuccess}
-          />
-        </div>
-      </div>
+    <div className="container flex lg:flex-row p-4 mx-auto">
+      <div className="w-full lg:w-2/3 lg:ml-4">
+        <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        selectable
+        views={{ month: true }}
+        defaultView={Views.MONTH}
+        onSelectEvent={handleSelectEvent}
+        onSelectSlot={(slotInfo) => setDate(slotInfo.start)}
+        onNavigate={(newDate) => setDate(newDate)}
+        date={date}
+        components={{
+          toolbar: CustomToolbar,
+        }}
+        eventPropGetter={eventStyleGetter}
+        dayPropGetter={dayPropGetter}
+        style={{ height: "400px", width: "100%" }}
+      />
     </div>
+    <div className="w-full lg:w-1/2 lg:ml-32">
+      <div className="flex mb-4">
+        <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
+        <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
+      </div>  
+      <DetailsCard
+        selectedEvent={selectedEvent}
+        cancelBooking={handleCancelBookingSuccess}
+        mealId={selectedEvent?.mealId}
+      />
+    </div>
+  </div>
+
   );
 };
 
