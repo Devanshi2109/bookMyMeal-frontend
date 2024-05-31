@@ -37,10 +37,9 @@ const NotificationIcon = () => {
 
   const clearNotifications = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.delete(
         `http://localhost:8080/api/notifications?userId=${userId}`,
         {
-          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -110,7 +109,7 @@ const NotificationIcon = () => {
 
   useEffect(() => {
     fetchNotifications(); // Fetch notifications on component mount
-    const interval = setInterval(fetchNotifications, 100); // Polling every minute
+    const interval = setInterval(fetchNotifications, 10000); // Polling every minute
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 

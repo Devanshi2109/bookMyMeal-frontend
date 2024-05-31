@@ -66,7 +66,7 @@ const Navbar = ({ loggedInUser }) => {
   const staticUserName = "Guest User";
 
   return (
-    <nav className="bg-navy text-white">
+    <nav className="bg-blue-900 text-white">
       <div className="container mx-auto flex items-center justify-between p-4">
         <div className="text-xl font-bold">
           <NavLink to="/">
