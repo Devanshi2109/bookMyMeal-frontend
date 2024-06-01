@@ -9,10 +9,10 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const setEmailId = useAuthStore((state) => state.setEmailId);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Perform validation
     if (!email) {
       toast.error("Please enter your email address.");
       return;
@@ -27,19 +27,28 @@ const ForgotPassword = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email }),
+          credentials: "include", // Ensure credentials (cookies) are included in the request if necessary
         }
       );
-      setEmailId(email);
+
       if (response.ok) {
-        toast.success("The OTP have been sent to your email.");
+        setEmailId(email);
+        toast.success("The OTP has been sent to your email.");
         setTimeout(() => {
           navigate("/otp");
         }, 1000);
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to send otp.");
+        const contentType = response.headers.get("content-type");
+        let errorData;
+        if (contentType && contentType.includes("application/json")) {
+          errorData = await response.json();
+        } else {
+          errorData = { message: "Failed to send OTP." };
+        }
+        toast.error(errorData.message || "Failed to send OTP.");
       }
     } catch (error) {
+      console.error("Error occurred:", error); // Log the actual error
       toast.error("An error occurred. Please try again later.");
     }
   };
