@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import axios from "../service/axios";
+import axiosInstance from "../service/axios";
+import { jwtDecode } from "jwt-decode";
 
 const useAuthStore = create((set) => ({
   isAuthenticated: false,
@@ -7,28 +8,25 @@ const useAuthStore = create((set) => ({
   user: null,
   userId: null,
   emailId: null,
+  logoutTimeout: null,
 
   login: async (email, password) => {
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
       });
 
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-
-      const data = await response.json();
-      // console.log("Login response data:", data);
+      const data = response.data;
 
       const token = data.jwt;
       const user = data.name;
       const userId = data.userId;
-      const emailId = data.email; // Assuming the response contains email
+      const emailId = data.email;
+
+      // Decode token to get expiration time
+      const decodedToken = jwtDecode(token);
+      const expiresAt = decodedToken.exp * 1000;
 
       set({
         isAuthenticated: true,
@@ -43,7 +41,17 @@ const useAuthStore = create((set) => ({
       localStorage.setItem("userId", userId);
       localStorage.setItem("emailId", emailId);
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${token}`;
+
+      // Set timeout for logout
+      const timeout = setTimeout(() => {
+        set({ logoutTimeout: null });
+        useAuthStore.getState().logout();
+      }, expiresAt - Date.now());
+
+      set({ logoutTimeout: timeout });
 
       return { success: true, user, userId, emailId };
     } catch (error) {
@@ -54,6 +62,7 @@ const useAuthStore = create((set) => ({
         user: null,
         userId: null,
         emailId: null,
+        logoutTimeout: null,
       });
       return { success: false, message: "Login failed" };
     }
@@ -61,7 +70,7 @@ const useAuthStore = create((set) => ({
 
   register: async (name, email, password, confirmPassword) => {
     try {
-      await axios.post("/auth/signup1", {
+      await axiosInstance.post("/auth/signup1", {
         name,
         email,
         password,
@@ -81,12 +90,19 @@ const useAuthStore = create((set) => ({
       user: null,
       userId: null,
       emailId: null,
+      logoutTimeout: null,
     });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userId");
     localStorage.removeItem("emailId");
-    delete axios.defaults.headers.common["Authorization"];
+    delete axiosInstance.defaults.headers.common["Authorization"];
+
+    // Clear any existing logout timeout
+    const { logoutTimeout } = useAuthStore.getState();
+    if (logoutTimeout) {
+      clearTimeout(logoutTimeout);
+    }
   },
 
   checkAuth: () => {
@@ -96,11 +112,29 @@ const useAuthStore = create((set) => ({
     const emailId = localStorage.getItem("emailId");
     const user = userJson ? JSON.parse(userJson) : null;
 
-    // console.log("Checking auth:", { token, user, userId, emailId });
-
     if (token && user && userId && emailId) {
-      set({ isAuthenticated: true, token, user, userId, emailId });
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      // Decode token to get expiration time
+      const decodedToken = jwtDecode(token);
+      const expiresAt = decodedToken.exp * 1000;
+
+      // Set timeout for logout
+      const timeout = setTimeout(() => {
+        set({ logoutTimeout: null });
+        useAuthStore.getState().logout();
+      }, expiresAt - Date.now());
+
+      set({
+        isAuthenticated: true,
+        token,
+        user,
+        userId,
+        emailId,
+        logoutTimeout: timeout,
+      });
+
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${token}`;
     }
   },
 

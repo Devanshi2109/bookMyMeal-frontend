@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaCaretDown, FaBars, FaTimes, FaSignOutAlt,} from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaCaretDown,
+  FaBars,
+  FaTimes,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import logo from "../assest/images/logo-white.svg";
 import NotificationIcon from "./NotificationIcon";
 import useAuthStore from "../app/authStore";
@@ -34,7 +40,10 @@ const Navbar = ({ loggedInUser }) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsDropdownOpen(false);
     }
-    if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+    if (
+      mobileDropdownRef.current &&
+      !mobileDropdownRef.current.contains(event.target)
+    ) {
       setIsMobileDropdownOpen(false);
     }
   };
@@ -66,14 +75,16 @@ const Navbar = ({ loggedInUser }) => {
   const staticUserName = "Guest User";
 
   return (
-    <nav className="bg-blue-900 text-white">
-      <div className="container mx-auto flex items-center justify-between p-4">
-        <div className="text-xl font-bold">
+    <nav className="text-white bg-blue-900">
+      <div className="container flex items-center justify-between p-4 mx-auto">
+        <div className="flex items-center text-xl font-bold">
           <NavLink to="/">
             <img src={logo} alt="Logo" className="h-8" />
           </NavLink>
+          <h2 className="ml-4 text-2xl">Meal facility</h2>{" "}
         </div>
-        <div className="hidden md:flex space-x-4">
+
+        <div className="hidden space-x-4 md:flex">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -110,7 +121,7 @@ const Navbar = ({ loggedInUser }) => {
             {isDropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute right-0 top-full mt-2 bg-white text-gray-800 rounded-md shadow-lg z-10 w-48"
+                className="absolute right-0 z-10 w-48 mt-2 text-gray-800 bg-white rounded-md shadow-lg top-full"
               >
                 <NavLink
                   to="/change-password"
@@ -121,7 +132,7 @@ const Navbar = ({ loggedInUser }) => {
                 </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-200 flex items-center"
+                  className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-200"
                 >
                   <FaSignOutAlt className="mr-2" />
                   <span>Logout</span>
@@ -130,7 +141,7 @@ const Navbar = ({ loggedInUser }) => {
             )}
           </div>
         </div>
-        <div className="md:hidden flex items-center">
+        <div className="flex items-center md:hidden">
           <NotificationIcon />
           <button onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
@@ -138,13 +149,11 @@ const Navbar = ({ loggedInUser }) => {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-blue-800">
+        <div className="bg-blue-800 md:hidden">
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${
-                isActive ? "font-bold" : ""
-              }`
+              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
             }
             onClick={toggleMobileMenu}
           >
@@ -153,9 +162,7 @@ const Navbar = ({ loggedInUser }) => {
           <NavLink
             to="/about-us"
             className={({ isActive }) =>
-              `block px-4 py-2 hover:bg-blue-700 ${
-                isActive ? "font-bold" : ""
-              }`
+              `block px-4 py-2 hover:bg-blue-700 ${isActive ? "font-bold" : ""}`
             }
             onClick={toggleMobileMenu}
           >
@@ -171,7 +178,7 @@ const Navbar = ({ loggedInUser }) => {
               <FaCaretDown className="ml-1" />
             </button>
             {isMobileDropdownOpen && (
-              <div ref={mobileDropdownRef} className="bg-blue-700 text-white">
+              <div ref={mobileDropdownRef} className="text-white bg-blue-700">
                 <NavLink
                   to="/change-password"
                   className="block px-4 py-2 hover:bg-blue-600"
@@ -181,7 +188,7 @@ const Navbar = ({ loggedInUser }) => {
                 </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 hover:bg-blue-600 flex items-center"
+                  className="flex items-center w-full px-4 py-2 text-left hover:bg-blue-600"
                 >
                   <FaSignOutAlt className="mr-2" />
                   <span>Logout</span>

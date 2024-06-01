@@ -6,7 +6,7 @@ import ViewBookBtn from "./ViewBookBtn";
 
 const HomePage = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen min-h-screen overflow-scroll hide-scrollbar">
       <Navbar />
       <div className="container flex-grow px-4 mx-auto">
         <div className="flex flex-wrap gap-4 my-8 ml-2">
