@@ -16,7 +16,7 @@ const localizer = momentLocalizer(moment);
 const HomepageCalendar = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null); // Initialize selectedEvent as null
 
   useEffect(() => {
     fetchBookings();
@@ -41,7 +41,7 @@ const HomepageCalendar = () => {
           .filter((booking) => !booking.canceled) // Filter out canceled events
           .map((booking) => ({
             id: booking.id,
-            title: 'Booked',
+            title: "Booked",
             start: moment(booking.date).toDate(),
             end: moment(booking.date).toDate(),
             allDay: true,
@@ -64,14 +64,14 @@ const HomepageCalendar = () => {
   };
 
   const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
+    setSelectedEvent(event); // Update selectedEvent when a new event is selected
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
     let backgroundColor = "";
 
-    if (moment(event.start).isBefore(moment(), 'day') || event.isRedeemed) {
-      backgroundColor = 'bg-gray-500';
+    if (moment(event.start).isBefore(moment(), "day") || event.isRedeemed) {
+      backgroundColor = "bg-gray-500";
     } else {
       backgroundColor = "bg-green-500";
     }
@@ -135,52 +135,64 @@ const HomepageCalendar = () => {
     );
   };
 
-  const handleBookingSuccess = (result) => {
+  const handleBookingSuccess = () => {
     fetchBookings();
-    console.log("Booking success!", result);
   };
 
   const handleCancelBookingSuccess = () => {
     fetchBookings();
-    console.log("Booking canceled successfully.");
+  };
+
+  const handleQRModalClose = () => {
+    fetchBookings(); // Fetch updated events when QR modal is closed
+  };
+
+  const updateEventStatus = (eventId, isRedeemed) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === eventId ? { ...event, isRedeemed } : event
+      )
+    );
   };
 
   return (
-    <div className="container flex lg:flex-row p-4 mx-auto">
+    <div className="container flex p-4 mx-auto lg:flex-row">
       <div className="w-full lg:w-2/3 lg:ml-4">
         <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        selectable
-        views={{ month: true }}
-        defaultView={Views.MONTH}
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={(slotInfo) => setDate(slotInfo.start)}
-        onNavigate={(newDate) => setDate(newDate)}
-        date={date}
-        components={{
-          toolbar: CustomToolbar,
-        }}
-        eventPropGetter={eventStyleGetter}
-        dayPropGetter={dayPropGetter}
-        style={{ height: "400px", width: "100%" }}
-      />
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          selectable
+          views={{ month: true }}
+          defaultView={Views.MONTH}
+          onSelectEvent={handleSelectEvent}
+          onSelectSlot={(slotInfo) => setDate(slotInfo.start)}
+          onNavigate={(newDate) => setDate(newDate)}
+          date={date}
+          components={{
+            toolbar: CustomToolbar,
+          }}
+          eventPropGetter={eventStyleGetter}
+          dayPropGetter={dayPropGetter}
+          style={{ height: "400px", width: "100%" }}
+        />
+      </div>
+      <div className="w-full lg:w-1/2 lg:ml-32 ">
+        <div className="flex mb-4">
+          <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
+          <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
+        </div>
+        {selectedEvent && (
+          <DetailsCard
+            selectedEvent={selectedEvent}
+            cancelBooking={handleCancelBookingSuccess}
+            updateEventStatus={updateEventStatus}
+            onQRModalClose={handleQRModalClose}
+          />
+        )}
+      </div>
     </div>
-    <div className="w-full lg:w-1/2 lg:ml-32">
-      <div className="flex mb-4">
-        <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
-        <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
-      </div>  
-      <DetailsCard
-        selectedEvent={selectedEvent}
-        cancelBooking={handleCancelBookingSuccess}
-        mealId={selectedEvent?.mealId}
-      />
-    </div>
-  </div>
-
   );
 };
 
