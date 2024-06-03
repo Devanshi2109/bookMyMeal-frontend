@@ -17,6 +17,7 @@ const DetailsCard = ({
   const [showQR, setShowQR] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [timerExpired, setTimerExpired] = useState(false); // State to track timer expiration
   const userName = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const DetailsCard = ({
             clearInterval(timer);
             redeemMeal();
             handleCloseQRModal();
+            setTimerExpired(true); // Set timer expiration state to true
             return 60;
           }
           return prevTime - 1;
@@ -40,7 +42,9 @@ const DetailsCard = ({
 
   useEffect(() => {
     setShowQR(false);
+    setShowConfirmation(false); // Reset confirmation state when new event is selected
     setTimeLeft(60);
+    setTimerExpired(false); // Reset timer expiration state when new event is selected
   }, [selectedEvent]);
 
   const handleShowQR = () => {
@@ -126,7 +130,7 @@ const DetailsCard = ({
           </li>
         ))}
       </ul>
-      {isBooked && (
+      {isBooked && !timerExpired && (
         <div className="flex  space-x-2 mt-2">
           <button
             className="w-40 h-12 px-3 py-3 m-2 text-sm text-blue-900 bg-white rounded-lg hover:bg-green-500 shadow hover:text-white"
