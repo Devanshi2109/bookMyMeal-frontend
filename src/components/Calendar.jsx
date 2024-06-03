@@ -8,11 +8,11 @@ import DetailsCard from "./DetailsCard";
 import QuickBookBtn from "./QuickBookBtn";
 import BookAMealBtn from "./BookAMealBtn";
 import publicHolidays from "../assest/publicHoliday.json";
+import ViewBookBtn from "./ViewBookBtn";
 
 moment.locale("en", { week: { dow: 1 } });
 
 const localizer = momentLocalizer(moment);
-
 const HomepageCalendar = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -178,20 +178,23 @@ const HomepageCalendar = () => {
           style={{ height: "400px", width: "100%" }}
         />
       </div>
-      <div className="w-full lg:w-1/2 lg:ml-32 ">
-        <div className="flex mb-4">
-          <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
-          <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
-        </div>
-        {selectedEvent && (
+      <div className="w-full lg:w-1/2 lg:ml-32 mr-2">
+        <div className="bg-white rounded-lg shadow-2xl p-6 border-2 border-gray-200">
+          <div className="flex mb-4">
+            <ViewBookBtn />
+            <QuickBookBtn onBookingSuccess={handleBookingSuccess} />
+            <BookAMealBtn onBookingSuccess={handleBookingSuccess} />
+            
+          </div>
           <DetailsCard
             selectedEvent={selectedEvent}
             cancelBooking={handleCancelBookingSuccess}
-            updateEventStatus={updateEventStatus}
+            mealId={selectedEvent?.mealId}
             onQRModalClose={handleQRModalClose}
           />
-        )}
+        </div>
       </div>
+
     </div>
   );
 };

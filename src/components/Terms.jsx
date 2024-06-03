@@ -7,8 +7,8 @@ const Terms = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="flex items-center p-4 text-white bg-navy">
+    <div className="flex flex-col h-screen bg-slate-100 overflow-scroll hide-scrollbar">
+      <header className="flex items-center p-4 text-white bg-blue-900 ">
         <button onClick={() => navigate("/")} className="flex items-center">
           <FaArrowLeft size={24} className="mr-2" />
         </button>

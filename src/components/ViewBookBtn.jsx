@@ -116,7 +116,7 @@ const ViewBookBtn = () => {
   return (
     <div className="flex justify-center items-center">
       <button
-        className="w-40 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
+        className="w-36 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
         onClick={handleViewClick}
       >
         View Booking

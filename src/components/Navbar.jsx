@@ -10,13 +10,13 @@ import {
 import logo from "../assest/images/logo-white.svg";
 import NotificationIcon from "./NotificationIcon";
 import useAuthStore from "../app/authStore";
-import LogoutConfirmationModal from "./LogoutConfirmation"; // Import the modal component
+import LogoutConfirmationModal from "./LogoutConfirmation";
 
-const Navbar = ({ loggedInUser }) => {
+const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // State for logout modal
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); 
   const location = useLocation();
   const dropdownRef = useRef(null);
   const mobileDropdownRef = useRef(null);
@@ -49,17 +49,17 @@ const Navbar = ({ loggedInUser }) => {
   };
 
   const handleLogout = () => {
-    setIsLogoutModalOpen(true); // Open the logout confirmation modal
+    setIsLogoutModalOpen(true); 
   };
 
   const confirmLogout = () => {
     logout();
     navigate("/login");
-    setIsLogoutModalOpen(false); // Close the modal after logout
+    setIsLogoutModalOpen(false); 
   };
 
   const closeLogoutModal = () => {
-    setIsLogoutModalOpen(false); // Close the modal without logging out
+    setIsLogoutModalOpen(false); 
   };
 
   useEffect(() => {
@@ -71,9 +71,6 @@ const Navbar = ({ loggedInUser }) => {
 
   const isActive = (path) => path === location.pathname;
 
-  // Static username for demonstration purposes
-  const staticUserName = "Guest User";
-
   return (
     <nav className="text-white bg-blue-900">
       <div className="container flex items-center justify-between p-4 mx-auto">
@@ -84,7 +81,7 @@ const Navbar = ({ loggedInUser }) => {
           <h2 className="ml-4 text-2xl">Meal facility</h2>{" "}
         </div>
 
-        <div className="hidden space-x-4 md:flex">
+        <div className="hidden space-x-4 md:flex items-center">
           <NavLink
             to="/"
             className={({ isActive }) =>
