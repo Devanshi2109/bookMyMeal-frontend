@@ -16,7 +16,7 @@ const localizer = momentLocalizer(moment);
 const HomepageCalendar = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null); // Initialize selectedEvent as null
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -38,7 +38,7 @@ const HomepageCalendar = () => {
 
       if (Array.isArray(bookings)) {
         const formattedEvents = bookings
-          .filter((booking) => !booking.canceled) // Filter out canceled events
+          .filter((booking) => !booking.canceled)
           .map((booking) => ({
             id: booking.id,
             title: "Booked",
@@ -64,7 +64,7 @@ const HomepageCalendar = () => {
   };
 
   const handleSelectEvent = (event) => {
-    setSelectedEvent(event); // Update selectedEvent when a new event is selected
+    setSelectedEvent(event);
   };
 
   const eventStyleGetter = (event, start, end, isSelected) => {
@@ -144,7 +144,7 @@ const HomepageCalendar = () => {
   };
 
   const handleQRModalClose = () => {
-    fetchBookings(); // Fetch updated events when QR modal is closed
+    fetchBookings();
   };
 
   const updateEventStatus = (eventId, isRedeemed) => {
