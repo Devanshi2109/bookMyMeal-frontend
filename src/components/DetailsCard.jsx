@@ -14,7 +14,8 @@ const DetailsCard = ({
   onQRModalClose,
 }) => {
   const [showQR, setShowQR] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 1 minute timer
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
   const userName = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -24,9 +25,9 @@ const DetailsCard = ({
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(timer);
-            redeemMeal(); // Make API call when timer expires
-            handleCloseQRModal(); // Close the QR modal
-            return 60; // Reset timer to 60 seconds
+            redeemMeal();
+            handleCloseQRModal();
+            return 60;
           }
           return prevTime - 1;
         });
@@ -37,21 +38,31 @@ const DetailsCard = ({
   }, [showQR]);
 
   useEffect(() => {
-    // Reset showQR state when selectedEvent changes
     setShowQR(false);
-    // Reset timer when selectedEvent changes
     setTimeLeft(60);
   }, [selectedEvent]);
 
   const handleShowQR = () => {
     if (!selectedEvent.isRedeemed) {
-      setShowQR(true);
+      setShowConfirmation(true);
     }
+  };
+
+  const handleConfirm = async () => {
+    setShowConfirmation(false);
+    setShowQR(true);
+    // Update event status locally
+    updateEventStatus(selectedEvent.id, true);
+    // Make API call to redeem meal
+    await redeemMeal();
+  };
+
+  const handleCancel = () => {
+    setShowConfirmation(false);
   };
 
   const handleCloseQRModal = () => {
     setShowQR(false);
-    // Notify parent component that QR modal is closed
     onQRModalClose();
   };
 
@@ -69,10 +80,8 @@ const DetailsCard = ({
       const data = response.data;
       if (data.success) {
         toast.success("Meal redeemed successfully!");
-        // Update event status
-        updateEventStatus(selectedEvent.id, true);
-        // Hide QR modal
         setShowQR(false);
+        updateEventStatus(selectedEvent.id, true);
       } else {
         toast.error("Failed to redeem meal. Please try again later.");
       }
@@ -162,6 +171,28 @@ const DetailsCard = ({
             </div>
             <div className="mt-4 text-center">
               <p className="text-red-500">Time left: {timeLeft} seconds</p>
+            </div>
+          </div>
+        </div>
+      )}
+      {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
+          <div className="relative w-full max-w-md p-5 text-black bg-white border rounded-md shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">Confirm Redemption</h2>
+            <p className="mb-4">Are you sure you want to redeem the coupon?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded shadow"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 text-sm text-white bg-blue-500 rounded shadow"
+                onClick={handleConfirm}
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>
