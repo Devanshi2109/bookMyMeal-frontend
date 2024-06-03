@@ -189,7 +189,7 @@ const HomepageCalendar = () => {
           <DetailsCard
             selectedEvent={selectedEvent}
             cancelBooking={handleCancelBookingSuccess}
-            mealId={selectedEvent?.mealId}
+            updateEventStatus={updateEventStatus}
             onQRModalClose={handleQRModalClose}
           />
         </div>
