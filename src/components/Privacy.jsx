@@ -7,8 +7,8 @@ const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen overflow-scroll hide-scrollbar">
-      <header className="flex items-center p-4 text-white bg-navy ">
+    <div className="h-screen overflow-scroll hide-scrollbar bg-slate-100">
+      <header className="flex items-center p-4 text-white bg-blue-900 ">
         <button onClick={() => navigate("/")} className="flex items-center">
           <FaArrowLeft size={24} className="mr-2" />
         </button>
