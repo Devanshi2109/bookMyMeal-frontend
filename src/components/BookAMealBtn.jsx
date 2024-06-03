@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import useAuthStore from "../app/authStore";
 import axios from "axios";
+import publicHolidays from "../assest/publicHoliday.json"; 
 
 const BookAMealBtn = ({ onBookingSuccess }) => {
   const [showModal, setShowModal] = useState(false);
@@ -21,6 +22,10 @@ const BookAMealBtn = ({ onBookingSuccess }) => {
   };
 
   const handleBookAMealBtn = async () => {
+    if (isPublicHoliday(selectedStartDate)) {
+      toast.error("Selected start date is a public holiday. Please choose another date.");
+      return;
+    }
     const bookingData = {
       userId,
       startDate: selectedStartDate,
@@ -44,14 +49,14 @@ const BookAMealBtn = ({ onBookingSuccess }) => {
       if (response.status === 200) {
         const result = response.data;
         toast.success("Meal booked successfully!");
-        setShowModal(false); // Close the modal after successful booking
+        setShowModal(false); 
 
-        // Trigger the onBookingSuccess callback with the result
+        
         if (typeof onBookingSuccess === "function") {
           onBookingSuccess(result);
         }
 
-        // Create notification
+        // handling notificatoin for the booked meal
         await createNotification();
       } else if (response.status === 403) {
         toast.error("You are not authorized to perform this action.");
@@ -63,6 +68,11 @@ const BookAMealBtn = ({ onBookingSuccess }) => {
       toast.error(error.message || "An error occurred");
     }
   };
+
+  const isPublicHoliday = (date) => {
+    return publicHolidays.includes(date);
+  };
+  
 
   const createNotification = async () => {
     const notificationData = {
@@ -89,7 +99,7 @@ const BookAMealBtn = ({ onBookingSuccess }) => {
         toast.success("Notification sent successfully!");
       } else {
         const errorData = response.data;
-        toast.error(errorData.message || "Notification failed");
+        (errorData.message || "Notification failed");
       }
     } catch (error) {
       toast.error(
@@ -134,7 +144,7 @@ const BookAMealBtn = ({ onBookingSuccess }) => {
     <div>
       <Toaster position="top-right" reverseOrder={false} />
       <button
-        className="w-40 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
+        className="w-32 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
         onClick={handleBookMeal}
       >
         Book Meal
