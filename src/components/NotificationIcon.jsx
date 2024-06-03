@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FaBell, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
-
 const NotificationIcon = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -108,8 +107,8 @@ const NotificationIcon = () => {
   }, []);
 
   useEffect(() => {
-    fetchNotifications(); // Fetch notifications on component mount
-    const interval = setInterval(fetchNotifications, 10000); // Polling every minute
+    fetchNotifications(); 
+    const interval = setInterval(fetchNotifications, 10000); 
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
@@ -147,7 +146,7 @@ const NotificationIcon = () => {
           </div>
           <div className="p-4 overflow-y-auto max-h-64">
             {notifications.length > 0 ? (
-              notifications.map((notification) => (
+              notifications.slice(0).reverse().map((notification) => (
                 <div
                   key={notification.id}
                   className="flex items-center justify-between p-2 my-1 transition-colors duration-300 bg-gray-200 rounded-md"
