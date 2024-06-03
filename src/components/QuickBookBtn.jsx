@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import axios from "axios";
 import useAuthStore from "../app/authStore";
-import publicHolidays from "../assest/publicHoliday.json"; // Import the public holidays JSON file
+import publicHolidays from "../assest/publicHoliday.json"; 
 
 const QuickBookBtn = ({ onBookingSuccess }) => {
   const [showModal, setShowModal] = useState(false);
@@ -21,7 +21,7 @@ const QuickBookBtn = ({ onBookingSuccess }) => {
   const handleQuickBook = () => {
     const now = new Date();
     const cutoffTime = new Date();
-    cutoffTime.setHours(20, 0, 0, 0); // 8 PM today
+    cutoffTime.setHours(20, 0, 0, 0); 
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -69,8 +69,9 @@ const QuickBookBtn = ({ onBookingSuccess }) => {
         const result = response.data;
         toast.success("Meal booked successfully!");
         setShowModal(false);
-        onBookingSuccess(result); // Call the onBookingSuccess function
-        await createNotification(); // Trigger notification
+        onBookingSuccess(result);
+
+        await createNotification(); 
       } else if (response.status === 403) {
         toast.error("You are not authorized to perform this action.");
       } else {
@@ -107,7 +108,7 @@ const QuickBookBtn = ({ onBookingSuccess }) => {
         toast.success("Notification sent successfully!");
       } else {
         const errorData = response.data;
-        toast.error(errorData.message || "Notification failed");
+        (errorData.message || "Notification failed");
       }
     } catch (error) {
       toast.error(error.message || "An error occurred while sending notification");
@@ -118,7 +119,7 @@ const QuickBookBtn = ({ onBookingSuccess }) => {
     <div>
       <Toaster position="top-right" reverseOrder={false} />
       <button
-        className="w-40 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
+        className="w-32 h-12 px-5 py-3 m-2 text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900"
         onClick={handleQuickBook}
         disabled={isDisabled}
       >

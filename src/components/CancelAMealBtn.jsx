@@ -23,7 +23,7 @@ const CancelAMealBtn = ({ mealId, date, onCancelSuccess }) => {
       
       if (response.status === 200) {
         toast.success("Booking canceled.");
-        onCancelSuccess(mealId); // Notify parent component about the cancellation
+        onCancelSuccess(mealId); 
         await axios.post('http://localhost:8080/api/notifications?notificationType=cancellation', {
           userId: localStorage.getItem('userId'),
           startDate:  date,
@@ -46,7 +46,7 @@ const CancelAMealBtn = ({ mealId, date, onCancelSuccess }) => {
   return (
     <>
       <button
-        className="w-40 h-12 px-3 py-3 m-2 text-red-600 bg-white border border-red-600 rounded-lg shadow-md hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-40 h-12 px-3 py-3 m-2 text-red-600 bg-white rounded-lg shadow-md hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleCancel}
         disabled={isDisabled}
       >
