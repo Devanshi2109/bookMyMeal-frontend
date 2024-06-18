@@ -73,7 +73,8 @@ const Register = () => {
     const { name, email, pass: password, re_pass: confirmPassword } = formData;
     const result = await register(name, email, password, confirmPassword);
     if (result.success) {
-      Navigate("/login"); // Redirect to login page after successful registration
+      localStorage.setItem("registrationSuccess", "true");
+      Navigate("/login"); 
     } else {
       toast.error("Something went wrong...!");
     }

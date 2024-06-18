@@ -32,6 +32,7 @@ const Login = () => {
 
     const res = await login(email, password);
     if (res.success) {
+      localStorage.setItem("loginSuccess", "true");
       if (rememberMe) {
         localStorage.setItem("token", res.token);
       }
@@ -40,6 +41,14 @@ const Login = () => {
       toast.error("Login failed. Please check your credentials.");
     }
   };
+
+  useEffect(() => {
+    const registrationSuccess = localStorage.getItem("registrationSuccess");
+    if (registrationSuccess) {
+      toast.success("Registration successful! You can now login.");
+      localStorage.removeItem("registrationSuccess");
+    }
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
